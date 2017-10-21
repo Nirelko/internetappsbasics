@@ -2,12 +2,12 @@
     ViewBag.Title = "Search";
 }
 
-@using Recipes.Models
-@model IEnumerable<Recipes.Models.Recipe>
+@using Reviews.Models
+@model IEnumerable<Reviews.Models.Recipe>
 
 @{
     ViewBag.Title = "Search Results";
-    Recipes.Models.Client clnt = (Recipes.Models.Client)Session["Client"];
+    Reviews.Models.Client clnt = (Reviews.Models.Client)Session["Client"];
 }
 
 @using (Html.BeginForm("Search", "Recipes", FormMethod.Get))
