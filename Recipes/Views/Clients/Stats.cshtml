@@ -1,0 +1,106 @@
+﻿<h2 class="page-title" style="margin-top: 30px">@ViewBag.Title</h2>
+
+@model IEnumerable<Recipes.ViewModels.UserRecipesViewModel>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    // collections of users
+    var usersInfo = Model.Select(x => new
+    {
+        UserName = x.UserName,
+        FirstName = x.FirstName,
+        LastName = x.LastName,
+        ID = x.Id
+    }).Distinct();
+
+    // collection of users and their comments
+    var usersRecipesInfo = usersInfo.Select(user => new
+    {
+        UserID = user.ID,
+        UserName = user.UserName,
+        FirstName = user.FirstName,
+        LastName = user.LastName,
+        Recipes = Model.Where(y => y.Id == user.ID).ToArray()
+    });
+
+    // collection of users and number of recipes (for JSON phi data)
+    var usersReplayCount = usersRecipesInfo.Select(x => new { Name = x.UserName, Count = x.Recipes.Length });
+}
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.UserName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FirstName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.LastName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Title)
+        </th>
+    </tr>
+
+    @{
+        foreach (var user in usersRecipesInfo)
+        {
+            <tr>
+                <td>
+                    @user.UserName
+                </td>
+                <td>
+                    @user.FirstName
+                </td>
+                <td>
+                    @user.LastName
+                </td>
+                <td>
+                    <ul>
+                        @{
+                            // print recipes for each user
+                            foreach (var recipe in user.Recipes)
+                            {
+                                <li>
+                                    @Html.ActionLink(recipe.Title, "../Recipes/DetailsByTitle", new { title = recipe.Title })
+                                </li>
+                            }
+                        }
+                    </ul>
+                </td>
+            </tr>
+        }
+    }
+</table>
+
+<hr/>
+
+<section id="popular-clients-graph">
+    <h4>Most popular reviewers</h4>
+    <p>Show the most popular users according to the number of recipes they've added so far</p>
+</section>
+
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="~/Scripts/graph.js"></script>
+<script>
+        var usersData = @Html.Raw(Json.Encode(usersReplayCount));
+        createPopularUsersGraph(usersData, "popular-clients-graph");
+</script>
+
+<hr/>
+
+<section id="popular-gender-graph">
+    <h4>Users by gender</h4>
+    <p>Show the users who added recipes split by their gender</p>
+</section>
+<script>
+        $.ajax({
+            url: '/Clients/GetGroupByGender',
+            success: function (data) {
+                createPopularUsersGraph(data, "popular-gender-graph");
+            }
+        })
+</script>

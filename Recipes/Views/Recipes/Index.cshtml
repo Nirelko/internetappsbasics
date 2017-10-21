@@ -1,0 +1,129 @@
+﻿@using Recipes.Models
+@model IEnumerable<Recipe>
+
+@{
+    ViewBag.Title = "Recipes";
+    var clnt = (Client)Session["Client"];
+}
+
+@using (Html.BeginForm("Search", "Recipes", FormMethod.Get))
+{
+    <aside style="margin: 20px 0">Enter up to 3 search parameters and click the "Search" button below</aside>
+
+    <div class="container">
+        <div class="row">
+            <div class="form-group col-md-2">
+                <div class="col-md-2">
+                    Title:
+                </div>
+                <div class="col-md-10">
+                    <input type="text" name="title" />
+                </div>
+            </div>
+            <div class="form-group col-md-2">
+                <div class="col-md-2">
+                    Content:
+                </div>
+                <div class="col-md-10">
+                    <input type="text" name="content" />
+                </div>
+            </div>
+            <div class="form-group col-md-2">
+                <div class="col-md-2">
+                    Date:
+                </div>
+                <div class="col-md-10">
+                    <input type="date" name="date" />
+                </div>
+            </div>
+            <div class="form-group col-md-2">
+                <div class="col-md-10">
+                    <input type="submit" value="Search" class="btn btn-default" style="position: absolute; top: 20px" />
+                </div>
+            </div>
+
+            <div class="form-group col-md-4">
+                @if (clnt != null)
+                {
+                    Recipe recommendedRecipe = ViewBag.recommendedRecipe;
+
+                    if (recommendedRecipe != null)
+                    {
+                        <h6>Recommended just for you :)</h6>
+                        <p>Click on the link below to see the most popular recipe in your favorite category</p>
+                        <a>@Html.ActionLink(recommendedRecipe.Title, "../Recipes/RecommendedRecipeDetails")</a>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <hr />
+
+    <div class="col-md-10">
+        @if (clnt != null)
+        {
+            <h6>Can't find the right recipe?</h6>
+            <button type="button" class="btn" style="border-radius: 15px 5px;">
+                @Html.ActionLink("Add a new Recipe", "Create")
+            </button>
+        }
+    </div>
+
+    <hr />
+}
+
+@foreach (var recipe in Model)
+{
+    <section>
+        <article class="blogPost">
+            <div>
+                <h4 style="color: green; display: inline-block;">
+                    @Html.DisplayFor(modelItem => recipe.Title)
+                </h4>
+                <a href="https://twitter.com/intent/tweet?screen_name=CoolRecipe&text=Check out this cool recipe for @recipe.Title ! http://localhost:53013/Recipes/Details/@recipe.Id" class="twitter-mention-button" data-show-count="false">Tweet to CoolRecipe</a>
+                <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+            </div>
+            <p>Posted on @Html.DisplayFor(modelItem => recipe.CreationDate) by @Html.ActionLink(recipe.Client.ClientName, "Details", "Clients", new { id = recipe.Client.Id }, null) - <b>@recipe.Comments.Count Comments</b> in @Html.DisplayFor(modelItem => recipe.Category.Name) category</p>
+
+            <div style="column-count: 3; column-gap:40px; column-rule: 1px solid lightgrey">
+                @Html.DisplayFor(modelItem => recipe.Content)
+            </div>                        
+                <div>
+                    @Html.ActionLink("Details", "Details", new { id = recipe.Id })
+                    @if (clnt != null && clnt.IsAdmin)
+                    {
+                        <span> | </span> @Html.ActionLink("Edit", "Edit", new { id = recipe.Id })
+                        <span> | </span> @Html.ActionLink("Delete", "Delete", new { id = recipe.Id })
+                    }
+                </div>            
+        </article>
+    </section>
+    <br />
+    <section id="comments">
+        <h5>Comments</h5>
+        @foreach (var comment in recipe.Comments)
+        {
+            <article>
+                <header>
+                    <span>By @comment.Client.ClientName</span> at @comment.CreationDate
+                </header>
+                @comment.Content
+            </article>
+        }
+
+        @if (clnt != null)
+        {
+            using (Html.BeginForm("PostComment", "Recipes"))
+            {
+                <input type="hidden" name="clientId" value="@clnt.Id" />
+                <input type="hidden" name="recipeId" value="@recipe.Id" />
+                <input type="text" name="content" placeholder="Add a new comment..." style="margin: 10px 0" />
+                <input type="submit" value="Post" class="btn btn-default" />
+                <br />
+            }
+        }
+    </section>
+    <hr />
+}
+

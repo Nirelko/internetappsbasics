@@ -1,0 +1,66 @@
+﻿@{
+    Recipes.Models.Client clnt = (Recipes.Models.Client)Session["Client"];
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Recipes</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <script src="~/Scripts/jquery-1.10.2.js"></script>
+
+</head>
+<body>
+    <header class="navbar navbar-dark flex-column flex-md-row bd-navbar">
+        <div class="navbar-header">
+            @Html.ActionLink("Recipes", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+        </div>
+        <div class="navbar-nav-scroll">
+            <ul class="navbar-nav bd-navbar-nav flex-row">
+                <li class="nav-item">@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+                <li class="nav-item">@Html.ActionLink("Recipes", "Index", "Recipes", new { area = "" }, new { @class = "nav-link" })</li>
+                @if (clnt != null && clnt.IsAdmin)
+                {
+                    <li class="nav-item">@Html.ActionLink("Categories", "Index", "Categories", new { area = "" }, new { @class = "nav-link" })</li>
+                }
+                @if (clnt != null && clnt.IsAdmin)
+                {
+                    <li class="nav-item">@Html.ActionLink("Users", "Index", "Clients", new { area = "" }, new { @class = "nav-link" })</li>
+                }
+                <li class="nav-item">@Html.ActionLink("User Statistics", "Stats", "Clients", new { area = "" }, new { @class = "nav-link" })</li>
+                <li class="nav-item">@Html.ActionLink("Recipe Statistics", "Stats", "Recipes", new { area = "" }, new { @class = "nav-link" })</li>
+                <li class="nav-item">@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+            </ul>
+        </div>
+        @Html.Partial("_LoginPartial")
+
+    </header>
+    <div class="container body-content">
+        @RenderBody()
+
+        <center>
+            <div id="temperatureDiv">
+                <br /><hr />
+                <h4>Weather in Rishon Lezion</h4>
+                <p>getting info...</p>
+            </div>
+        </center>
+
+        <!-- Weather webservice -->
+        <script src="~/Scripts/weather.js"></script>
+        <script src="https://query.yahooapis.com/v1/public/yql?q=select item, wind from weather.forecast where woeid in (select woeid from geo.places(1) where text='Rishon LeZion, il') and u='c'&format=json&callback=weatherCallback"></script>
+        <hr />
+        <footer>
+            <center>
+                <p>&copy; @DateTime.Now.Year - EST - Recipes </p>
+            </center>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

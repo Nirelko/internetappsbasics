@@ -1,0 +1,53 @@
+﻿@model Recipes.Models.Recipe
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<div>
+    <dl class="dl-horizontal" style="margin: 20px 0">
+        <dt>
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+        
+        <dt>
+            @Html.DisplayNameFor(model => model.Client.ClientName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Client.ClientName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Category.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Category.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Content)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Content)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreationDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreationDate)
+        </dd>
+
+    </dl>
+</div>x
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
+
+<a href="https://twitter.com/intent/tweet?screen_name=CoolRecipe&text=Check out this cool recipe for @Model.Title ! http://localhost:53013/Recipes/Details/@Model.Id" class="twitter-mention-button" data-show-count="false">Tweet to CoolRecipe</a>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>

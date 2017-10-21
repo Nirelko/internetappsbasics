@@ -1,0 +1,26 @@
+﻿@{
+    Recipes.Models.Client clnt = ((Recipes.Models.Client)Session["Client"]);
+}
+
+<ul class="navbar-nav bd-navbar-nav flex-row navbar-right">
+    @if (clnt == null)
+    {
+        <li class="nav-item">
+            @Html.ActionLink("Register", "Create", "Clients", new {area = ""}, new {@class = "nav-link"})
+        </li>
+        <li class="nav-item">
+            @Html.ActionLink("Login", "RecipesLogin", "Clients", new {area = ""}, new {@class = "nav-link"})
+        </li>
+    }
+    else
+    {
+        <li class="nav-item" style="margin-top: 6px; margin-right: 20px">
+            <a style="color: white !important; font-size: 18px; pointer-events: none;" href="#">
+                Welcome @(clnt.FirstName + " " + clnt.LastName)
+            </a>
+        </li>
+        <li class="nav-item" style="margin-right: 10px">
+            @Html.ActionLink("Log Out", "Logout", "Clients", new {area = ""}, new {@class = "nav-link"})
+        </li>
+    }
+</ul>
