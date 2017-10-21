@@ -5,8 +5,8 @@ namespace Reviews.Models.Db
 {
     public class ModelsMapping : DbContext
     {
-        public DbSet<Client> Clients { get; set; }
-        public DbSet<Recipe> Recipes { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Review> Recipes { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Category> Categories { get; set; }
 

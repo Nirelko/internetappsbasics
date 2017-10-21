@@ -17,7 +17,7 @@ namespace Reviews.Controllers
         {
             if (AuthorizationMiddleware.AdminAuthorized(Session))
             {
-                return View(_db.Clients.ToList());
+                return View(_db.Users.ToList());
             }
 
             return RedirectToAction("Index", "Home");
@@ -32,7 +32,7 @@ namespace Reviews.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var client = _db.Clients.Find(id);
+            var client = _db.Users.Find(id);
 
             if (client == null)
             {
@@ -49,15 +49,15 @@ namespace Reviews.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,Gender,ClientName,FirstName,LastName,Password,isAdmin")] Client client)
+        public ActionResult Create([Bind(Include = "ID,Gender,Username,FirstName,LastName,Password,isAdmin")] User user)
         {
-            if (!ModelState.IsValid) return View(client);
+            if (!ModelState.IsValid) return View(user);
 
-            var requestedUser = _db.Clients.FirstOrDefault(x => x.ClientName == client.ClientName);
+            var requestedUser = _db.Users.FirstOrDefault(x => x.Username == user.Username);
 
-            if (requestedUser != null) return View(client);
+            if (requestedUser != null) return View(user);
 
-            _db.Clients.Add(client);
+            _db.Users.Add(user);
             _db.SaveChanges();
 
             return RedirectToAction("RecipesLogin", "Clients");
@@ -72,7 +72,7 @@ namespace Reviews.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var client = _db.Clients.Find(id);
+            var client = _db.Users.Find(id);
 
             if (client == null)
             {
@@ -84,13 +84,13 @@ namespace Reviews.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,Gender,ClientName,FirstName,LastName,Password,isAdmin")] Client client)
+        public ActionResult Edit([Bind(Include = "ID,Gender,Username,FirstName,LastName,Password,isAdmin")] User user)
         {
             if (!AuthorizationMiddleware.AdminAuthorized(Session)) return RedirectToAction("Index", "Home");
 
-            if (!ModelState.IsValid) return View(client);
+            if (!ModelState.IsValid) return View(user);
 
-            _db.Entry(client).State = EntityState.Modified;
+            _db.Entry(user).State = EntityState.Modified;
             _db.SaveChanges();
 
             return RedirectToAction("Index");
@@ -105,7 +105,7 @@ namespace Reviews.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var client = _db.Clients.Find(id);
+            var client = _db.Users.Find(id);
 
             if (client == null)
             {
@@ -117,12 +117,12 @@ namespace Reviews.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Login([Bind(Include = "ClientName,Password")] Client client)
+        public ActionResult Login([Bind(Include = "Username,Password")] User user)
         {
-            var pass = client.Password;
-            var logonName = client.ClientName;
+            var pass = user.Password;
+            var logonName = user.Username;
 
-            var requestedClient = _db.Clients.SingleOrDefault(u => u.ClientName.Equals(logonName) && u.Password.Equals(pass));
+            var requestedClient = _db.Users.SingleOrDefault(u => u.Username.Equals(logonName) && u.Password.Equals(pass));
 
             if (requestedClient == null)
             {
@@ -157,7 +157,7 @@ namespace Reviews.Controllers
         {
             if (!AuthorizationMiddleware.AdminAuthorized(Session)) return RedirectToAction("Index", "Home");
 
-            var client = _db.Clients.Find(id);
+            var client = _db.Users.Find(id);
 
             var recipes = _db.Recipes.Where(x => x.ClientId == id).ToList();
 
@@ -171,10 +171,10 @@ namespace Reviews.Controllers
                 _db.Recipes.Remove(currRecipe);
             }
 
-            _db.Clients.Remove(client);
+            _db.Users.Remove(client);
             _db.SaveChanges();
 
-            if (((Client)Session["Client"]).Id == id)
+            if (((User)Session["Client"]).Id == id)
             {
                 Session.Clear();
             }
@@ -186,11 +186,11 @@ namespace Reviews.Controllers
         {
             // join select for users and their recipes
             var query =
-                from client in _db.Clients
+                from client in _db.Users
                 join recipe in _db.Recipes on client.Id equals recipe.ClientId
                 select new UserRecipesViewModel
                 {
-                    UserName = client.ClientName,
+                    UserName = client.Username,
                     FirstName = client.FirstName,
                     LastName = client.LastName,
                     Title = recipe.Title,
@@ -205,11 +205,11 @@ namespace Reviews.Controllers
         {
             if (!AuthorizationMiddleware.AdminAuthorized(Session)) return RedirectToAction("Index", "Home");
 
-            var requestedClients = new List<Client>();
+            var requestedClients = new List<User>();
 
-            foreach (var client in _db.Clients)
+            foreach (var client in _db.Users)
             {
-                if (!string.IsNullOrEmpty(username) && client.ClientName.Contains(username))
+                if (!string.IsNullOrEmpty(username) && client.Username.Contains(username))
                 {
                     requestedClients.Add(client);
                 }
@@ -223,13 +223,13 @@ namespace Reviews.Controllers
                 }
             }
 
-            return View(requestedClients.OrderByDescending(x => x.ClientName));
+            return View(requestedClients.OrderByDescending(x => x.Username));
         }
 
         [HttpGet]
         public ActionResult GetGroupByGender()
         {
-            var data = _db.Clients.GroupBy(x => x.Gender, client => client, (gender, clients) => new
+            var data = _db.Users.GroupBy(x => x.Gender, client => client, (gender, clients) => new
             {
                 Name = gender.ToString(),
                 Count = clients.Count()

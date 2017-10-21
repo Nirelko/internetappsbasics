@@ -15,7 +15,7 @@ namespace Reviews.ViewModels
         [DisplayName("Last Name")]
         public string LastName { get; set; }
 
-        [DisplayName("Recipe")]
+        [DisplayName("Review")]
         public string Title { get; set; }
     }
 }

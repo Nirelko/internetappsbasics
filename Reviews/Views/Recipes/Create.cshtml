@@ -1,9 +1,9 @@
 ﻿@using Reviews.Models
-@model Recipe
+@model Review
 
 @{
     ViewBag.Title = "Create";
-    Client clnt = (Reviews.Models.Client)Session["Client"];
+    var clnt = (User)Session["Client"];
 }
 
 @using (Html.BeginForm()) 

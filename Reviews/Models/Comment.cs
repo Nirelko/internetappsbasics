@@ -1,20 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Reviews.Models
 {
     public class Comment : BaseModel
     {
-        [Required]
-        [ForeignKey("Client")]
-        public int ClientId { get; set; }
-
-        [Required]
-        [ForeignKey("Recipe")]
-        public int RecipeId { get; set; }
-
+        [MaxLength(8000)]
         [Required]
         public string Content { get; set; }
 
@@ -22,8 +14,10 @@ namespace Reviews.Models
         [DisplayName("Created at")]
         public DateTime CreationDate { get; set; }
 
-        public virtual Recipe Recipe { get; set; }
+        [Required]
+        public virtual Review Review { get; set; }
 
-        public virtual Client Client { get; set; }
+        [Required]
+        public virtual User User { get; set; }
     }
 }

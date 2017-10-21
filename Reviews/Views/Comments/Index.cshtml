@@ -7,10 +7,10 @@
 <table class="table" style="margin: 20px 0">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Client.ClientName)
+            @Html.DisplayNameFor(model => model.User.Username)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Recipe.Title)
+            @Html.DisplayNameFor(model => model.Review.Title)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Content)
@@ -24,10 +24,10 @@
     @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Client.ClientName)
+                @Html.DisplayFor(modelItem => item.User.Username)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Recipe.Content)
+                @Html.DisplayFor(modelItem => item.Review.Content)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Content)

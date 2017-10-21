@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Reviews.Models.Client>
+﻿@model IEnumerable<Reviews.Models.User>
 
 @{
     ViewBag.Title = "Index";
@@ -51,7 +51,7 @@
             @Html.DisplayNameFor(model => model.Gender)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.ClientName)
+            @Html.DisplayNameFor(model => model.Username)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.FirstName)
@@ -75,7 +75,7 @@
                 @Html.DisplayFor(modelItem => item.Gender)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ClientName)
+                @Html.DisplayFor(modelItem => item.Username)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.FirstName)

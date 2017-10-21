@@ -1,4 +1,4 @@
-﻿@model Reviews.Models.Recipe
+﻿@model Reviews.Models.Review
 
 @{
     ViewBag.Title = "Details";
@@ -14,10 +14,10 @@
         </dd>
         
         <dt>
-            @Html.DisplayNameFor(model => model.Client.ClientName)
+            @Html.DisplayNameFor(model => model.User.Username)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Client.ClientName)
+            @Html.DisplayFor(model => model.User.Username)
         </dd>
 
         <dt>

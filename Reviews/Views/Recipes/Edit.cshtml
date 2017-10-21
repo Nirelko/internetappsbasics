@@ -1,8 +1,8 @@
-﻿@model Reviews.Models.Recipe
+﻿@model Reviews.Models.Review
 
 @{
     ViewBag.Title = "Edit";
-    Reviews.Models.Client clnt = (Reviews.Models.Client)Session["Client"];
+    Reviews.Models.User clnt = (Reviews.Models.User)Session["Client"];
 }
 
 @using (Html.BeginForm())

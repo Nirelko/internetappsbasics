@@ -7,9 +7,9 @@ namespace Reviews.Models
     public class Category : BaseModel
     {
         [Required]
-        [DisplayName("Food Category")]
+        [DisplayName("Category")]
         public string Name { get; set; }
 
-        public virtual List<Recipe> Recipes { get; set; }
+        public virtual List<Review> Reviews { get; set; }
     }
 }

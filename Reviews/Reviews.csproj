@@ -210,12 +210,12 @@
     <Compile Include="Models\Gender.cs" />
     <Compile Include="ViewModels\RecipeCommentViewModel.cs" />
     <Compile Include="ViewModels\UserRecipesViewModel.cs" />
-    <Compile Include="Models\Client.cs" />
+    <Compile Include="Models\User.cs" />
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\Db\ModelsMapping.cs" />
     <Compile Include="Models\Category.cs" />
     <Compile Include="Models\Db\ApplicationUser.cs" />
-    <Compile Include="Models\Recipe.cs" />
+    <Compile Include="Models\Review.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>

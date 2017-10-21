@@ -7,12 +7,12 @@ namespace Reviews.Controllers
     {
         public static bool AdminAuthorized(HttpSessionStateBase session)
         {
-            return Authorized(session) && ((Client)session["Client"]).IsAdmin;
+            return Authorized(session) && ((User)session["Client"]).IsAdmin;
         }
 
         public static bool Authorized(HttpSessionStateBase session)
         {
-            return (Client)session["Client"] != null;
+            return (User)session["Client"] != null;
         }
     }
 }

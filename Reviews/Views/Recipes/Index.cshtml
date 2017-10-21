@@ -1,9 +1,9 @@
 ﻿@using Reviews.Models
-@model IEnumerable<Recipe>
+@model IEnumerable<Review>
 
 @{
-    ViewBag.Title = "Recipes";
-    var clnt = (Client)Session["Client"];
+    ViewBag.Title = "Reviews";
+    var clnt = (User)Session["Client"];
 }
 
 @using (Html.BeginForm("Search", "Recipes", FormMethod.Get))
@@ -45,13 +45,13 @@
             <div class="form-group col-md-4">
                 @if (clnt != null)
                 {
-                    Recipe recommendedRecipe = ViewBag.recommendedRecipe;
+                    Review recommendedReview = ViewBag.recommendedRecipe;
 
-                    if (recommendedRecipe != null)
+                    if (recommendedReview != null)
                     {
                         <h6>Recommended just for you :)</h6>
                         <p>Click on the link below to see the most popular recipe in your favorite category</p>
-                        <a>@Html.ActionLink(recommendedRecipe.Title, "../Recipes/RecommendedRecipeDetails")</a>
+                        <a>@Html.ActionLink(recommendedReview.Title, "../Reviews/RecommendedRecipeDetails")</a>
                     }
                 }
             </div>
@@ -65,7 +65,7 @@
         {
             <h6>Can't find the right recipe?</h6>
             <button type="button" class="btn" style="border-radius: 15px 5px;">
-                @Html.ActionLink("Add a new Recipe", "Create")
+                @Html.ActionLink("Add a new Review", "Create")
             </button>
         }
     </div>
@@ -84,7 +84,7 @@
                 <a href="https://twitter.com/intent/tweet?screen_name=CoolRecipe&text=Check out this cool recipe for @recipe.Title ! http://localhost:53013/Recipes/Details/@recipe.Id" class="twitter-mention-button" data-show-count="false">Tweet to CoolRecipe</a>
                 <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
             </div>
-            <p>Posted on @Html.DisplayFor(modelItem => recipe.CreationDate) by @Html.ActionLink(recipe.Client.ClientName, "Details", "Clients", new { id = recipe.Client.Id }, null) - <b>@recipe.Comments.Count Comments</b> in @Html.DisplayFor(modelItem => recipe.Category.Name) category</p>
+            <p>Posted on @Html.DisplayFor(modelItem => recipe.CreationDate) by @Html.ActionLink(recipe.User.Username, "Details", "Clients", new { id = recipe.User.Id }, null) - <b>@recipe.Comments.Count Comments</b> in @Html.DisplayFor(modelItem => recipe.Category.Name) category</p>
 
             <div style="column-count: 3; column-gap:40px; column-rule: 1px solid lightgrey">
                 @Html.DisplayFor(modelItem => recipe.Content)
@@ -106,7 +106,7 @@
         {
             <article>
                 <header>
-                    <span>By @comment.Client.ClientName</span> at @comment.CreationDate
+                    <span>By @comment.User.Username</span> at @comment.CreationDate
                 </header>
                 @comment.Content
             </article>

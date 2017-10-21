@@ -1,6 +1,6 @@
 ﻿@using Reviews.Models
 @{
-    Client clnt = (Client)Session["Client"];
+    User clnt = (User)Session["Client"];
 }
 <!DOCTYPE html>
 <html>
@@ -16,12 +16,12 @@
 <body>
     <header class="navbar navbar-dark flex-column flex-md-row bd-navbar">
         <div class="navbar-header">
-            @Html.ActionLink("Recipes", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            @Html.ActionLink("Reviews", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
         </div>
         <div class="navbar-nav-scroll">
             <ul class="navbar-nav bd-navbar-nav flex-row">
                 <li class="nav-item">@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                <li class="nav-item">@Html.ActionLink("Recipes", "Index", "Recipes", new { area = "" }, new { @class = "nav-link" })</li>
+                <li class="nav-item">@Html.ActionLink("Reviews", "Index", "Recipes", new { area = "" }, new { @class = "nav-link" })</li>
                 @if (clnt != null && clnt.IsAdmin)
                 {
                     <li class="nav-item">@Html.ActionLink("Categories", "Index", "Categories", new { area = "" }, new { @class = "nav-link" })</li>
@@ -31,7 +31,7 @@
                     <li class="nav-item">@Html.ActionLink("Users", "Index", "Clients", new { area = "" }, new { @class = "nav-link" })</li>
                 }
                 <li class="nav-item">@Html.ActionLink("User Statistics", "Stats", "Clients", new { area = "" }, new { @class = "nav-link" })</li>
-                <li class="nav-item">@Html.ActionLink("Recipe Statistics", "Stats", "Recipes", new { area = "" }, new { @class = "nav-link" })</li>
+                <li class="nav-item">@Html.ActionLink("Review Statistics", "Stats", "Recipes", new { area = "" }, new { @class = "nav-link" })</li>
                 <li class="nav-item">@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>
             </ul>
         </div>

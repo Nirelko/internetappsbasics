@@ -6,7 +6,7 @@ namespace Reviews.ViewModels
     {
         public int Id { get; set; }
 
-        [DisplayName("Recipe")]
+        [DisplayName("Review")]
         public string Title { get; set; }
 
         [DisplayName("Number Of Comments")]

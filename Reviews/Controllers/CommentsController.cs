@@ -13,7 +13,7 @@ namespace Reviews.Controllers
 
         public ActionResult Index()
         {
-            var comments = _db.Comments.Include(c => c.Client).Include(c => c.Recipe);
+            var comments = _db.Comments.Include(c => c.User).Include(c => c.Review);
 
             return View(comments.ToList());
         }
@@ -39,7 +39,7 @@ namespace Reviews.Controllers
         {
             if (!AuthorizationMiddleware.Authorized(Session)) return RedirectToAction("Index", "Home");
 
-            ViewBag.ClientID = new SelectList(_db.Clients, "ID", "ClientName");
+            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username");
             ViewBag.RecipeID = new SelectList(_db.Recipes, "ID", "Content");
 
             return View();
@@ -59,7 +59,7 @@ namespace Reviews.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.ClientID = new SelectList(_db.Clients, "ID", "ClientName", comment.ClientId);
+            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username", comment.ClientId);
             ViewBag.RecipeID = new SelectList(_db.Recipes, "ID", "Content", comment.RecipeId);
 
             return View(comment);
@@ -81,7 +81,7 @@ namespace Reviews.Controllers
                 return HttpNotFound();
             }
 
-            ViewBag.ClientID = new SelectList(_db.Clients, "ID", "ClientName", comment.ClientId);
+            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username", comment.ClientId);
             ViewBag.RecipeID = new SelectList(_db.Recipes, "ID", "Content", comment.RecipeId);
 
             return View(comment);
@@ -101,7 +101,7 @@ namespace Reviews.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.ClientID = new SelectList(_db.Clients, "ID", "ClientName", comment.ClientId);
+            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username", comment.ClientId);
             ViewBag.RecipeID = new SelectList(_db.Recipes, "ID", "Content", comment.RecipeId);
 
             return View(comment);

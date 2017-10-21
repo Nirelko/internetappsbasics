@@ -3,11 +3,11 @@
 }
 
 @using Reviews.Models
-@model IEnumerable<Reviews.Models.Recipe>
+@model IEnumerable<Reviews.Models.Review>
 
 @{
     ViewBag.Title = "Search Results";
-    Reviews.Models.Client clnt = (Reviews.Models.Client)Session["Client"];
+    Reviews.Models.User clnt = (Reviews.Models.User)Session["Client"];
 }
 
 @using (Html.BeginForm("Search", "Recipes", FormMethod.Get))
@@ -49,13 +49,13 @@
             <div class="form-group col-md-4">
                 @if (clnt != null)
                 {
-                    Recipe recommendedRecipe = ViewBag.recommendedRecipe;
+                    Review recommendedReview = ViewBag.recommendedRecipe;
 
-                    if (recommendedRecipe != null)
+                    if (recommendedReview != null)
                     {
                         <h6>Recommended just for you :)</h6>
                         <p>Click on the link below to see the most popular recipe in your favorite category</p>
-                        <a>@Html.ActionLink(recommendedRecipe.Title, "../Recipes/RecommendedRecipeDetails")</a>
+                        <a>@Html.ActionLink(recommendedReview.Title, "../Reviews/RecommendedRecipeDetails")</a>
                     }
                 }
             </div>
@@ -69,7 +69,7 @@
         {
             <h6>Can't find the right recipe?</h6>
             <button type="button" class="btn" style="border-radius: 15px 5px">
-                @Html.ActionLink("Add a new Recipe", "Create")
+                @Html.ActionLink("Add a new Review", "Create")
             </button>
         }
     </div>
@@ -84,7 +84,7 @@
                 @Html.DisplayFor(modelItem => recipe.Title)
             </h4>
 
-            <p>Posted on @Html.DisplayFor(modelItem => recipe.CreationDate) by <a href="#">@Html.DisplayFor(modelItem => recipe.Client.ClientName)</a> - <a href="#comments">@recipe.Comments.Count Comments</a> in @Html.DisplayFor(modelItem => recipe.Category.Name) category</p>
+            <p>Posted on @Html.DisplayFor(modelItem => recipe.CreationDate) by <a href="#">@Html.DisplayFor(modelItem => recipe.User.Username)</a> - <a href="#comments">@recipe.Comments.Count Comments</a> in @Html.DisplayFor(modelItem => recipe.Category.Name) category</p>
 
             <div style="column-count: 3; column-gap:40px; column-rule: 1px solid lightgrey">
                 @Html.DisplayFor(modelItem => recipe.Content)
@@ -109,7 +109,7 @@
         {
             <article>
                 <header>
-                    <span>By @comment.Client.ClientName</span> at @comment.CreationDate
+                    <span>By @comment.User.Username</span> at @comment.CreationDate
                 </header>
                 @comment.Content
             </article>

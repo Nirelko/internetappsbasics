@@ -16,29 +16,29 @@ namespace Reviews.Controllers
 
         public ActionResult Index()
         {
-            var recipes = _db.Recipes.Include(p => p.Client).Include(p => p.Category);
+            var recipes = _db.Recipes.Include(p => p.User).Include(p => p.Category);
 
             ViewBag.RecommendedRecipe = GetRecommendedRecipe(recipes);
 
             return View(recipes.ToList());
         }
 
-        private Recipe GetRecommendedRecipe(IQueryable<Recipe> allRecipes)
+        private Review GetRecommendedRecipe(IQueryable<Review> allRecipes)
         {
-            var currentUser = (Client)Session["Client"];
+            var currentUser = (User)Session["Client"];
 
             if (currentUser == null) return null;
 
-            var currentUserRecipes = _db.Clients.Where(x => x.Id == currentUser.Id).Include(x => x.Recipes).SingleOrDefault()?.Recipes;
+            var currentUserRecipes = _db.Users.Where(x => x.Id == currentUser.Id).Include(x => x.Reviews).SingleOrDefault()?.Reviews;
 
             if (currentUserRecipes == null || !currentUserRecipes.Any()) return null;
 
             // Find the food category in which the current user wrote most of his recipes, and then get the
-            // recipe with the biggest number of comments in this category and display it to the current user
-            // as his recommended recipe
+            // review with the biggest number of comments in this category and display it to the current user
+            // as his recommended review
             Category currUserTopCategory = currentUserRecipes
                 .GroupBy(x => x.Category)
-                .OrderByDescending(x => x.Key.Recipes.Count(recipe => recipe.ClientId == currentUser.Id))
+                .OrderByDescending(x => x.Key.Reviews.Count(recipe => recipe.ClientId == currentUser.Id))
                 .FirstOrDefault()?.Key;
 
             return allRecipes
@@ -66,7 +66,7 @@ namespace Reviews.Controllers
 
         public ActionResult RecommendedRecipeDetails()
         {
-            var recipes = _db.Recipes.Include(p => p.Client).Include(p => p.Category);
+            var recipes = _db.Recipes.Include(p => p.User).Include(p => p.Category);
             var recommendedRecipe = GetRecommendedRecipe(recipes);
 
             if (recommendedRecipe == null)
@@ -98,7 +98,7 @@ namespace Reviews.Controllers
         {
             if (!AuthorizationMiddleware.Authorized(Session)) return RedirectToAction("Index", "Home");
 
-            ViewBag.ClientID = new SelectList(_db.Clients, "ID", "ClientName");
+            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username");
             ViewBag.CategoryID = new SelectList(_db.Categories, "ID", "Name");
 
             return View();
@@ -106,9 +106,9 @@ namespace Reviews.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,clientId,CategoryID,Title,Content")] Recipe recipe)
+        public ActionResult Create([Bind(Include = "ID,clientId,CategoryID,Title,Content")] Review review)
         {
-            if (recipe.Content == null || recipe.Title == null || recipe.CategoryId == 0)
+            if (review.Content == null || review.Title == null || review.CategoryId == 0)
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -117,17 +117,17 @@ namespace Reviews.Controllers
 
             if (ModelState.IsValid)
             {
-                recipe.CreationDate = DateTime.Now;
-                _db.Recipes.Add(recipe);
+                review.CreationDate = DateTime.Now;
+                _db.Recipes.Add(review);
                 _db.SaveChanges();
 
                 return RedirectToAction("Index");
             }
 
-            ViewBag.ClientID = new SelectList(_db.Clients, "ID", "ClientName", recipe.ClientId);
-            ViewBag.CategoryID = new SelectList(_db.Categories, "ID", "Name", recipe.CategoryId);
+            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username", review.ClientId);
+            ViewBag.CategoryID = new SelectList(_db.Categories, "ID", "Name", review.CategoryId);
 
-            return View(recipe);
+            return View(review);
         }
 
         public ActionResult Edit(int? id)
@@ -146,7 +146,7 @@ namespace Reviews.Controllers
                 return HttpNotFound();
             }
 
-            ViewBag.ClientID = new SelectList(_db.Clients, "ID", "ClientName", recipe.ClientId);
+            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username", recipe.ClientId);
             ViewBag.CategoryID = new SelectList(_db.Categories, "ID", "Name", recipe.CategoryId);
 
             return View(recipe);
@@ -154,9 +154,9 @@ namespace Reviews.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,clientId,CategoryID,Title,Content")] Recipe recipe)
+        public ActionResult Edit([Bind(Include = "ID,clientId,CategoryID,Title,Content")] Review review)
         {
-            if (recipe.Content == null || recipe.Title == null)
+            if (review.Content == null || review.Title == null)
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -165,17 +165,17 @@ namespace Reviews.Controllers
 
             if (ModelState.IsValid)
             {
-                recipe.CreationDate = DateTime.Now;
-                _db.Entry(recipe).State = EntityState.Modified;
+                review.CreationDate = DateTime.Now;
+                _db.Entry(review).State = EntityState.Modified;
                 _db.SaveChanges();
 
                 return RedirectToAction("Index");
             }
 
-            ViewBag.ClientID = new SelectList(_db.Clients, "ID", "ClientName", recipe.ClientId);
-            ViewBag.CategoryID = new SelectList(_db.Categories, "ID", "Name", recipe.CategoryId);
+            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username", review.ClientId);
+            ViewBag.CategoryID = new SelectList(_db.Categories, "ID", "Name", review.CategoryId);
 
-            return View(recipe);
+            return View(review);
         }
 
         public ActionResult Delete(int? id)
@@ -204,7 +204,7 @@ namespace Reviews.Controllers
             if (!AuthorizationMiddleware.Authorized(Session)) return RedirectToAction("Index", "Home");
 
             var recipe = _db.Recipes.Find(id);
-            var commentsToRemove = _db.Comments.Where(x => x.Recipe.Id == id).ToList();
+            var commentsToRemove = _db.Comments.Where(x => x.Review.Id == id).ToList();
 
             foreach (var commentToRemove in commentsToRemove)
             {
@@ -240,7 +240,7 @@ namespace Reviews.Controllers
         {
             var query =
                 from recipe in _db.Recipes
-                join client in _db.Clients on recipe.ClientId equals client.Id
+                join client in _db.Users on recipe.ClientId equals client.Id
                 select new RecipeCommentViewModel
                 {
                     Title = recipe.Title,
@@ -255,7 +255,7 @@ namespace Reviews.Controllers
         {
             var query =
                 from recipe in _db.Recipes
-                join client in _db.Clients on recipe.ClientId equals client.Id
+                join client in _db.Users on recipe.ClientId equals client.Id
                 select new RecipeCommentViewModel
                 {
                     Title = recipe.Title,
@@ -271,7 +271,7 @@ namespace Reviews.Controllers
         [HttpGet]
         public ActionResult Search(string content, string title, DateTime? date)
         {
-            var queryRecipes = new List<Recipe>();
+            var queryRecipes = new List<Review>();
 
             foreach (var recipe in _db.Recipes)
             {

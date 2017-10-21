@@ -65,7 +65,7 @@
                             foreach (var recipe in user.Recipes)
                             {
                                 <li>
-                                    @Html.ActionLink(recipe.Title, "../Recipes/DetailsByTitle", new { title = recipe.Title })
+                                    @Html.ActionLink(recipe.Title, "../Reviews/DetailsByTitle", new { title = recipe.Title })
                                 </li>
                             }
                         }
