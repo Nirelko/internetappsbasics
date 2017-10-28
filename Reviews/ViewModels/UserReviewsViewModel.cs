@@ -2,10 +2,8 @@
 
 namespace Reviews.ViewModels
 {
-    public class UserReviewsViewModel
+    public class UserReviewsViewModel : BaseViewModel
     {
-        public int Id { get; set; }
-
         [DisplayName("User Name")]
         public string UserName { get; set; }
 

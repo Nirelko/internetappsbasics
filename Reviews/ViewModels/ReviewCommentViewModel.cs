@@ -2,10 +2,8 @@
 
 namespace Reviews.ViewModels
 {
-    public class ReviewCommentViewModel
+    public class ReviewCommentViewModel : BaseViewModel
     {
-        public int Id { get; set; }
-
         [DisplayName("Review")]
         public string Title { get; set; }
 

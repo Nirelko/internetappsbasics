@@ -211,6 +211,7 @@
     <Compile Include="Models\BaseModel.cs" />
     <Compile Include="Models\Db\ApplicationDbContext.cs" />
     <Compile Include="Models\Gender.cs" />
+    <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\ReviewCommentViewModel.cs" />
     <Compile Include="ViewModels\UserReviewsViewModel.cs" />
     <Compile Include="Models\User.cs" />
@@ -270,11 +271,11 @@
     <Content Include="Views\User\Details.cshtml" />
     <Content Include="Views\User\Edit.cshtml" />
     <Content Include="Views\User\Index.cshtml" />
-    <Content Include="Views\Recipes\Create.cshtml" />
-    <Content Include="Views\Recipes\Delete.cshtml" />
-    <Content Include="Views\Recipes\Details.cshtml" />
-    <Content Include="Views\Recipes\Edit.cshtml" />
-    <Content Include="Views\Recipes\Index.cshtml" />
+    <Content Include="Views\Reviews\Create.cshtml" />
+    <Content Include="Views\Reviews\Delete.cshtml" />
+    <Content Include="Views\Reviews\Details.cshtml" />
+    <Content Include="Views\Reviews\Edit.cshtml" />
+    <Content Include="Views\Reviews\Index.cshtml" />
     <Content Include="Views\Categories\Create.cshtml" />
     <Content Include="Views\Categories\Delete.cshtml" />
     <Content Include="Views\Categories\Details.cshtml" />
@@ -285,11 +286,11 @@
     <Content Include="Views\Comments\Details.cshtml" />
     <Content Include="Views\Comments\Edit.cshtml" />
     <Content Include="Views\Comments\Index.cshtml" />
-    <Content Include="Views\User\RecipesLogin.cshtml" />
+    <Content Include="Views\User\Login.cshtml" />
     <Content Include="Views\User\FailedLogin.cshtml" />
     <Content Include="Views\User\Stats.cshtml" />
-    <Content Include="Views\Recipes\Stats.cshtml" />
-    <Content Include="Views\Recipes\Search.cshtml" />
+    <Content Include="Views\Reviews\Stats.cshtml" />
+    <Content Include="Views\Reviews\Search.cshtml" />
     <Content Include="Views\User\Search.cshtml" />
   </ItemGroup>
   <ItemGroup>

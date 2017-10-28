@@ -86,7 +86,7 @@ namespace Reviews.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult RecipesLogin()
+        public ActionResult Login()
         {
             return View();
         }
@@ -123,16 +123,20 @@ namespace Reviews.Controllers
         [AllowAnonymous]
         public ActionResult Create([Bind(Include = "ID,Gender,Username,FirstName,LastName,Password,isAdmin")] User user)
         {
-            if (!ModelState.IsValid) return View(user);
+            if (!ModelState.IsValid)
+            {
+                return View(user);
+            }
 
-            var requestedUser = Db.Users.FirstOrDefault(x => x.Username == user.Username);
-
-            if (requestedUser != null) return View(user);
+            if (Db.Users.Any(x => x.Username == user.Username))
+            {
+                return View(user);
+            }
 
             Db.Users.Add(user);
             Db.SaveChanges();
 
-            return RedirectToAction("RecipesLogin", "User");
+            return RedirectToAction("ReviewsLogin", "User");
         }
 
         [HttpPost]
@@ -183,17 +187,13 @@ namespace Reviews.Controllers
         [AllowAnonymous]
         public ActionResult Login([Bind(Include = "Username,Password")] User user)
         {
-            var pass = user.Password;
-            var logonName = user.Username;
-
-            var requestedClient = Db.Users.SingleOrDefault(u => u.Username.Equals(logonName) && u.Password.Equals(pass));
-
-            if (requestedClient == null)
+            var requestedUser = Db.Users.SingleOrDefault(u => u.Username.Equals(user.Username) && u.Password.Equals(user.Password));
+            if (requestedUser == null)
             {
                 return RedirectToAction("FailedLogin", "User");
             }
 
-            Session.Add("Client", requestedClient);
+            Session.Add("Client", requestedUser);
 
             return RedirectToAction("Index", "Home");
         }
