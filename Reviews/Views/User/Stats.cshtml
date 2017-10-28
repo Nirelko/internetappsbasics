@@ -78,7 +78,7 @@
 
 <hr/>
 
-<section id="popular-clients-graph">
+<section id="popular-users-graph">
     <h4>Most popular reviewers</h4>
     <p>Show the most popular users according to the number of recipes they've added so far</p>
 </section>
@@ -87,7 +87,7 @@
 <script src="~/Scripts/graph.js"></script>
 <script>
         var usersData = @Html.Raw(Json.Encode(usersReplayCount));
-        createPopularUsersGraph(usersData, "popular-clients-graph");
+        createPopularUsersGraph(usersData, "popular-users-graph");
 </script>
 
 <hr/>
@@ -98,7 +98,7 @@
 </section>
 <script>
         $.ajax({
-            url: '/Clients/GetGroupByGender',
+            url: '/Users/GetGroupByGender',
             success: function (data) {
                 createPopularUsersGraph(data, "popular-gender-graph");
             }

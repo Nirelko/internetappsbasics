@@ -36,15 +36,15 @@ namespace Reviews.Controllers
 
         public ActionResult Create()
         {
-            ViewBag.ClientID = new SelectList(Db.Users, "ID", "Username");
-            ViewBag.RecipeID = new SelectList(Db.Recipes, "ID", "Content");
+            ViewBag.UserID = new SelectList(Db.Users, "ID", "Username");
+            ViewBag.RecipeID = new SelectList(Db.Reviews, "ID", "Content");
 
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,ClientID,RecipeID,Content,CreationDate")] Comment comment)
+        public ActionResult Create([Bind(Include = "ID,UserID,RecipeID,Content,CreationDate")] Comment comment)
         {
             if (ModelState.IsValid)
             {
@@ -54,8 +54,8 @@ namespace Reviews.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.ClientID = new SelectList(Db.Users, "ID", "Username", comment.User.Id);
-            ViewBag.RecipeID = new SelectList(Db.Recipes, "ID", "Content", comment.Review.Id);
+            ViewBag.UserID = new SelectList(Db.Users, "ID", "Username", comment.User.Id);
+            ViewBag.RecipeID = new SelectList(Db.Reviews, "ID", "Content", comment.Review.Id);
 
             return View(comment);
         }
@@ -74,15 +74,15 @@ namespace Reviews.Controllers
                 return HttpNotFound();
             }
 
-            ViewBag.ClientID = new SelectList(Db.Users, "ID", "Username", comment.User.Id);
-            ViewBag.RecipeID = new SelectList(Db.Recipes, "ID", "Content", comment.User.Id);
+            ViewBag.UserID = new SelectList(Db.Users, "ID", "Username", comment.User.Id);
+            ViewBag.RecipeID = new SelectList(Db.Reviews, "ID", "Content", comment.User.Id);
 
             return View(comment);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,ClientID,RecipeID,Content,CreationDate")] Comment comment)
+        public ActionResult Edit([Bind(Include = "ID,UserID,RecipeID,Content,CreationDate")] Comment comment)
         {
             if (ModelState.IsValid)
             {
@@ -92,8 +92,8 @@ namespace Reviews.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.ClientID = new SelectList(Db.Users, "ID", "Username", comment.User.Id);
-            ViewBag.RecipeID = new SelectList(Db.Recipes, "ID", "Content", comment.Review.Id);
+            ViewBag.UserID = new SelectList(Db.Users, "ID", "Username", comment.User.Id);
+            ViewBag.RecipeID = new SelectList(Db.Reviews, "ID", "Content", comment.Review.Id);
 
             return View(comment);
         }

@@ -3,14 +3,14 @@
 }
 
 @using Reviews.Models
-@model IEnumerable<Reviews.Models.Review>
+@model IEnumerable<Review>
 
 @{
     ViewBag.Title = "Search Results";
-    Reviews.Models.User clnt = (Reviews.Models.User)Session["Client"];
+    var user = (User)Session["User"];
 }
 
-@using (Html.BeginForm("Search", "Recipes", FormMethod.Get))
+@using (Html.BeginForm("Search", "Reviews", FormMethod.Get))
 {
     <aside style="margin: 20px 0">Enter up to 3 search parameters and click the "Search" button below</aside>
 
@@ -47,7 +47,7 @@
             </div>
 
             <div class="form-group col-md-4">
-                @if (clnt != null)
+                @if (user != null)
                 {
                     Review recommendedReview = ViewBag.recommendedRecipe;
 
@@ -65,7 +65,7 @@
     <hr />
 
     <div class="col-md-10">
-        @if (clnt != null)
+        @if (user != null)
         {
             <h6>Can't find the right recipe?</h6>
             <button type="button" class="btn" style="border-radius: 15px 5px">
@@ -90,7 +90,7 @@
                 @Html.DisplayFor(modelItem => recipe.Content)
             </div>
 
-            @if (clnt != null && clnt.IsAdmin)
+            @if (user != null && user.IsAdmin)
             {
                 <div>
                     @Html.ActionLink("Edit", "Edit", new { id = recipe.Id }) |
@@ -115,11 +115,11 @@
             </article>
         }
 
-        @if (clnt != null)
+        @if (user != null)
         {
-            using (Html.BeginForm("PostComment", "Recipes"))
+            using (Html.BeginForm("PostComment", "Reviews"))
             {
-                <input type="hidden" name="clientId" value="@clnt.Id" />
+                <input type="hidden" name="userId" value="@user.Id" />
                 <input type="hidden" name="recipeID" value="@recipe.Id" />
                 <input type="text" name="content" placeholder="Add a new comment..." style="margin: 10px 0" />
                 <input type="submit" value="Post" class="btn btn-default" />

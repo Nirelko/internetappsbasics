@@ -197,14 +197,15 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Attributes\AdminRequiredAttribute.cs" />
-    <Compile Include="Attributes\ControllerLoginRequired.cs" />
+    <Compile Include="Attributes\AnonymousControllerRequired.cs" />
+    <Compile Include="Attributes\LoginRequiredAttribute.cs" />
     <Compile Include="Filters\ReviewsAuthorizeFilter.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\CommentsController.cs" />
     <Compile Include="Controllers\CategoriesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\RecipesController.cs" />
+    <Compile Include="Controllers\ReviewsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

@@ -115,11 +115,11 @@ namespace Reviews.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             var category = Db.Categories.Find(id);
-            var recipes = Db.Recipes.Where(x => x.Category.Id == id).ToList();
+            var recipes = Db.Reviews.Where(x => x.Category.Id == id).ToList();
 
             foreach (var currRecipe in recipes)
             {
-                var recipe = Db.Recipes.Find(currRecipe.Id);
+                var recipe = Db.Reviews.Find(currRecipe.Id);
 
                 var commentsToRemove = Db.Comments.Where(x => x.Review.Id == currRecipe.Id).ToList();
                     
@@ -128,7 +128,7 @@ namespace Reviews.Controllers
                     Db.Comments.Remove(currComment);
                 }
 
-                Db.Recipes.Remove(recipe);
+                Db.Reviews.Remove(recipe);
             }
 
             Db.Categories.Remove(category);

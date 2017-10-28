@@ -16,11 +16,27 @@ namespace Reviews.Filters
 
             var controller = (Controller)filterContext.Controller;
 
-            AuthorizeAction(filterContext, controller);
             AuthorizeController(filterContext, controller);
         }
 
-        private void AuthorizeAction(AuthorizationContext filterContext, Controller controller)
+        private void AuthorizeController(AuthorizationContext filterContext, Controller controller)
+        {
+            if (filterContext.ActionDescriptor.ControllerDescriptor.IsDefined(typeof(AnonymousControllerRequired), true))
+            {
+                AuthorizeAction(filterContext, controller, true);
+                return;
+            }
+
+            if (filterContext.ActionDescriptor.ControllerDescriptor.IsDefined(typeof(AdminRequiredAttribute), true) &&
+                !AdminAuthorized(controller.Session))
+            {
+                HandleUnauthorizedRequest(filterContext);
+            }
+
+            AuthorizeAction(filterContext, controller, false);
+        }
+
+        private void AuthorizeAction(AuthorizationContext filterContext, Controller controller, bool isAnonymousController)
         {
             if (filterContext.ActionDescriptor.IsDefined(typeof(AllowAnonymousAttribute), true))
             {
@@ -32,22 +48,8 @@ namespace Reviews.Filters
                 HandleUnauthorizedRequest(filterContext);
             }
 
-            if (!Authorized(controller.Session))
-            {
-                HandleUnauthorizedRequest(filterContext);
-            }
-        }
-
-        private void AuthorizeController(AuthorizationContext filterContext, Controller controller)
-        {
-            if (filterContext.ActionDescriptor.ControllerDescriptor.IsDefined(typeof(AdminRequiredAttribute), true) &&
-                !AdminAuthorized(controller.Session))
-            {
-                HandleUnauthorizedRequest(filterContext);
-            }
-
-            if(filterContext.ActionDescriptor.ControllerDescriptor.IsDefined(typeof(ControllerLoginRequired), true) &&
-               !Authorized(controller.Session))
+            if ((!isAnonymousController || filterContext.ActionDescriptor.IsDefined(typeof(LoginRequiredAttribute), true)) &&
+                !Authorized(controller.Session))
             {
                 HandleUnauthorizedRequest(filterContext);
             }
@@ -55,12 +57,12 @@ namespace Reviews.Filters
 
         private bool AdminAuthorized(HttpSessionStateBase session)
         {
-            return Authorized(session) && ((User)session["Client"]).IsAdmin;
+            return Authorized(session) && ((User)session["User"]).IsAdmin;
         }
 
         private bool Authorized(HttpSessionStateBase session)
         {
-            return (User)session["Client"] != null;
+            return (User)session["User"] != null;
         }
 
         protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -25,14 +24,13 @@ namespace Reviews.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var client = Db.Users.Find(id);
-
-            if (client == null)
+            var user = Db.Users.Find(id);
+            if (user == null)
             {
                 return HttpNotFound();
             }
 
-            return View(client);
+            return View(user);
         }
 
         [AllowAnonymous]
@@ -49,14 +47,13 @@ namespace Reviews.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var client = Db.Users.Find(id);
-
-            if (client == null)
+            var user = Db.Users.Find(id);
+            if (user == null)
             {
                 return HttpNotFound();
             }
 
-            return View(client);
+            return View(user);
         }
 
         [AdminRequired]
@@ -67,14 +64,13 @@ namespace Reviews.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var client = Db.Users.Find(id);
-
-            if (client == null)
+            var user = Db.Users.Find(id);
+            if (user == null)
             {
                 return HttpNotFound();
             }
 
-            return View(client);
+            return View(user);
         }
 
         [AllowAnonymous]
@@ -100,20 +96,19 @@ namespace Reviews.Controllers
         [AllowAnonymous]
         public ActionResult Stats()
         {
-            // join select for users and their recipes
-            var query =
-                from client in Db.Users
-                join recipe in Db.Recipes on client.Id equals recipe.User.Id
+            var userReviewsViewModels =
+                from user in Db.Users
+                join review in Db.Reviews on user.Id equals review.User.Id
                 select new UserReviewsViewModel
                 {
-                    UserName = client.Username,
-                    FirstName = client.FirstName,
-                    LastName = client.LastName,
-                    Title = recipe.Title,
-                    Id = client.Id
+                    UserName = user.Username,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Title = review.Title,
+                    Id = user.Id
                 };
 
-            return View(query.ToList());
+            return View(userReviewsViewModels.ToList());
         }       
 
         #region API
@@ -123,12 +118,7 @@ namespace Reviews.Controllers
         [AllowAnonymous]
         public ActionResult Create([Bind(Include = "ID,Gender,Username,FirstName,LastName,Password,isAdmin")] User user)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(user);
-            }
-
-            if (Db.Users.Any(x => x.Username == user.Username))
+            if (!ModelState.IsValid || Db.Users.Any(x => x.Username == user.Username))
             {
                 return View(user);
             }
@@ -136,7 +126,7 @@ namespace Reviews.Controllers
             Db.Users.Add(user);
             Db.SaveChanges();
 
-            return RedirectToAction("ReviewsLogin", "User");
+            return RedirectToAction("Login", "User");
         }
 
         [HttpPost]
@@ -144,7 +134,10 @@ namespace Reviews.Controllers
         [AdminRequired]
         public ActionResult Edit([Bind(Include = "ID,Gender,Username,FirstName,LastName,Password,isAdmin")] User user)
         {
-            if (!ModelState.IsValid) return View(user);
+            if (!ModelState.IsValid)
+            {
+                return View(user);
+            }
 
             Db.Entry(user).State = EntityState.Modified;
             Db.SaveChanges();
@@ -157,24 +150,18 @@ namespace Reviews.Controllers
         [AdminRequired]
         public ActionResult DeleteConfirmed(int id)
         {
-            var client = Db.Users.Find(id);
-
-            var recipes = Db.Recipes.Where(x => x.User.Id == id).ToList();
-
-            foreach (var currComment in Db.Comments.Where(x => x.User.Id == id).ToList())
+            var user = Db.Users.Find(id);
+            if (user == null)
             {
-                Db.Comments.Remove(currComment);
+                return HttpNotFound();
             }
 
-            foreach (var currRecipe in recipes)
-            {
-                Db.Recipes.Remove(currRecipe);
-            }
+            RemoveLinkedReviews(id);
 
-            Db.Users.Remove(client);
+            Db.Users.Remove(user);
             Db.SaveChanges();
 
-            if (((User)Session["Client"]).Id == id)
+            if (((User)Session["User"]).Id == id)
             {
                 Session.Clear();
             }
@@ -182,18 +169,36 @@ namespace Reviews.Controllers
             return RedirectToAction("Index");
         }
 
+        private void RemoveLinkedReviews(int userId)
+        {
+            RemoveLinkedReviewsComments(userId);
+
+            foreach (var review in Db.Reviews.Where(x => x.User.Id == userId).ToList())
+            {
+                Db.Reviews.Remove(review);
+            }
+        }
+
+        private void RemoveLinkedReviewsComments(int userId)
+        {
+            foreach (var comment in Db.Comments.Where(x => x.User.Id == userId).ToList())
+            {
+                Db.Comments.Remove(comment);
+            }
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public ActionResult Login([Bind(Include = "Username,Password")] User user)
+        public ActionResult Login([Bind(Include = "Username,Password")] User loginCredentials)
         {
-            var requestedUser = Db.Users.SingleOrDefault(u => u.Username.Equals(user.Username) && u.Password.Equals(user.Password));
-            if (requestedUser == null)
+            var user = Db.Users.SingleOrDefault(u => u.Username.Equals(loginCredentials.Username) && u.Password.Equals(loginCredentials.Password));
+            if (user == null)
             {
                 return RedirectToAction("FailedLogin", "User");
             }
 
-            Session.Add("Client", requestedUser);
+            Session.Add("User", user);
 
             return RedirectToAction("Index", "Home");
         }
@@ -202,38 +207,24 @@ namespace Reviews.Controllers
         [AdminRequired]
         public ActionResult Search(string username, string firstname, string lastname)
         {
-            var requestedClients = new List<User>();
-
-            foreach (var client in Db.Users)
-            {
-                if (!string.IsNullOrEmpty(username) && client.Username.Contains(username))
-                {
-                    requestedClients.Add(client);
-                }
-                else if (!string.IsNullOrEmpty(firstname) && client.FirstName.Contains(firstname))
-                {
-                    requestedClients.Add(client);
-                }
-                else if (!string.IsNullOrEmpty(lastname) && client.LastName.Contains(lastname))
-                {
-                    requestedClients.Add(client);
-                }
-            }
-
-            return View(requestedClients.OrderByDescending(x => x.Username));
+            return View(Db.Users.Where(user =>
+                (!string.IsNullOrEmpty(username) && user.Username.Contains(username)) ||
+                (!string.IsNullOrEmpty(firstname) && user.FirstName.Contains(firstname)) ||
+                (!string.IsNullOrEmpty(lastname) && user.LastName.Contains(lastname))
+            ).OrderByDescending(x => x.Username));
         }
 
         [HttpGet]
         [AllowAnonymous]
-        public ActionResult GetGroupByGender() // TODO: Check if its redundent
+        public ActionResult GetGroupByGender()
         {
-            var data = Db.Users.GroupBy(x => x.Gender, client => client, (gender, clients) => new
+            var genderToUsers = Db.Users.GroupBy(x => x.Gender, user => user, (gender, users) => new
             {
                 Name = gender.ToString(),
-                Count = clients.Count()
+                Count = users.Count()
             });
 
-            return Json(data, JsonRequestBehavior.AllowGet);
+            return Json(genderToUsers, JsonRequestBehavior.AllowGet);
         }
 
         #endregion

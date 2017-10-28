@@ -74,7 +74,7 @@
 <script src="~/Scripts/graph.js"></script>
 <script>
     $.ajax({
-        url: '/Recipes/StatsJson',
+        url: '/Reviews/StatsJson',
         success: function (result) {
             var usersData = result;
             createPopularRecipesGraph(usersData);
