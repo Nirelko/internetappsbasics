@@ -1,46 +1,62 @@
-﻿body {    
-    padding-bottom: 20px;
+﻿html,body {
+    background: #f1f1f1;
 }
 
-/* Set padding to keep content from hitting the edges */
-.body-content {
-    padding-left: 15px;
-    padding-right: 15px;
-}
-
-/* Override the default bootstrap behavior where horizontal description lists 
-   will truncate terms that are too long to fit in the left column 
-*/
 .dl-horizontal dt {
     white-space: normal;
 }
 
-/* Set width on the form input elements since they're 100% wide by default */
-input,
-select,
-textarea {
-    max-width: 280px;
-}
 @font-face {
     src: url("/fonts/glyphicons-halflings-regular.woff");
 }
 
-.bd-navbar {
-    min-height: 4rem;
-    background-color: #563d7c;
-    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.05), inset 0 -1px 0 rgba(0,0,0,.1);
+.reviews-navbar {
+    min-height: 65px;
+    background: white;
+    border-top: 2px solid orange;
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,.45);
 }
 
-.bd-navbar .navbar-nav .nav-link {
-    padding-right: .5rem;
-    padding-left: .5rem;
-    color: #cdbfe3;
+.reviews-navbar .navbar-nav .nav-item {
+    padding-right: 1rem;
 }
 
-.link-color {
+.main-search {
+    height: 150px;
+    width: 100%;
+    color: #FFF;
+    display: flex;
+    background-color: #117bf3;
+    background-image: url(https://cdn.sstatic.net/img/hero/pattern.svg?v=4b5c30ad0473),linear-gradient(to right, #126CFA 0, #108AEC 100%);
+    background-position: right center,center center;
+    background-repeat: no-repeat,no-repeat;
+    font-size: 18px;
+    margin-bottom: 25px;
+    margin-top: 65px;
+    justify-content: center;
+    align-items: center;
+}
+
+.main-search input {
+    border: 1px solid white;
+}
+
+.main-search .btn.btn-outline-light:hover {
+    background-color: #0000006e;
+}
+
+.sticky-bottom {
+    bottom: 0;
+    position: absolute;
+    width: 100%;
+    display: flex;
+    background: #3e3e3e;
+    justify-content: space-evenly;
+    height: 45px;
+    align-items: flex-end;
     color: white;
 }
-.footer-bla {
-    position: relative;
-    bottom: 0;
+
+#temperatureDiv {
+    display: flex;
 }

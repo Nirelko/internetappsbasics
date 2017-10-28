@@ -11,13 +11,12 @@
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
     <script src="~/Scripts/jquery-1.10.2.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 
 </head>
 <body>
-    <header class="navbar navbar-dark flex-column flex-md-row bd-navbar">
-        <div class="navbar-header">
-            @Html.ActionLink("Reviews", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-        </div>
+    <header class="navbar navbar-light bg-light fixed-top reviews-navbar">
+        <img src="../../Content/stackReviews.png" style="width: 10rem;">
         <div class="navbar-nav-scroll">
             <ul class="navbar-nav bd-navbar-nav flex-row">
                 <li class="nav-item">@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
@@ -38,28 +37,32 @@
         @Html.Partial("_LoginPartial")
 
     </header>
-    <div class="container body-content">
+    <div class="main-search">
+        <div style="width:50%;">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search review for...">
+                <span class="input-group-btn">
+                    <button class="btn btn-outline-light btn-lg" type="button">Search!</button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="container">
         @RenderBody()
 
-        <center>
+    </div>
+    <footer class="sticky-bottom" style="text-align: center;">
             <div id="temperatureDiv">
-                <br /><hr />
-                <h4>Weather in Rishon Lezion</h4>
+                <span>Weather in Tel Aviv: </span>
                 <p>getting info...</p>
             </div>
-        </center>
+        <div>
+            <p>© 2017 - stackReviews </p>
+        </div>
+    </footer>
 
-        <!-- Weather webservice -->
-        <script src="~/Scripts/weather.js"></script>
-        <script src="https://query.yahooapis.com/v1/public/yql?q=select item, wind from weather.forecast where woeid in (select woeid from geo.places(1) where text='Rishon LeZion, il') and u='c'&format=json&callback=weatherCallback"></script>
-        <hr />
-        <footer>
-            <center>
-                <p>&copy; @DateTime.Now.Year - EST - Recipes </p>
-            </center>
-        </footer>
-    </div>
-
+    <script src="~/Scripts/weather.js"></script>
+    <script src="https://query.yahooapis.com/v1/public/yql?q=select item, wind from weather.forecast where woeid in (select woeid from geo.places(1) where text='Tel Aviv, il') and u='c'&format=json&callback=weatherCallback"></script>
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
