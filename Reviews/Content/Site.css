@@ -47,7 +47,7 @@
 
 .sticky-bottom {
     bottom: 0;
-    position: absolute;
+    position: fixed;
     width: 100%;
     display: flex;
     background: #3e3e3e;
@@ -59,4 +59,10 @@
 
 #temperatureDiv {
     display: flex;
+}
+
+.login {
+    padding: 2em;
+    width: 50%;
+    margin: 0 auto;
 }
