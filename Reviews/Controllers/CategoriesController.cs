@@ -2,39 +2,27 @@
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using Reviews.Attributes;
 using Reviews.Models;
-using Reviews.Models.Db;
 
 namespace Reviews.Controllers
 {
-    public class CategoriesController : Controller
+    [AdminRequired]
+    public class CategoriesController : BaseController
     {
-        private readonly ModelsMapping _db = new ModelsMapping();
-
-        // GET: Catgories
         public ActionResult Index()
         {
-            if (AuthorizationMiddleware.AdminAuthorized(Session))
-            {
-                return View(_db.Categories.ToList());
-            }
-
-            return RedirectToAction("Index", "Home");
+            return View(Db.Categories.ToList());
         }
 
         public ActionResult Details(int? id)
         {
-            if (!AuthorizationMiddleware.AdminAuthorized(Session))
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var category = _db.Categories.Find(id);
+            var category = Db.Categories.Find(id);
 
             if (category == null)
             {
@@ -46,42 +34,39 @@ namespace Reviews.Controllers
 
         public ActionResult Create()
         {
-            if (AuthorizationMiddleware.AdminAuthorized(Session))
-            {
                 return View();
-            }
-
-            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "ID,Name")] Category category)
         {
-            if (!AuthorizationMiddleware.AdminAuthorized(Session)) return RedirectToAction("Index", "Home");
+            if (!ModelState.IsValid)
+            {
+                return View(category);
+            }
 
-            if (!ModelState.IsValid) return View(category);
+            var requestedCategory = Db.Categories.FirstOrDefault(x => x.Name == category.Name);
 
-            var requestedCategory = _db.Categories.FirstOrDefault(x => x.Name == category.Name);
+            if (requestedCategory != null)
+            {
+                return View(category);
+            }
 
-            if (requestedCategory != null) return View(category);
-
-            _db.Categories.Add(category);
-            _db.SaveChanges();
+            Db.Categories.Add(category);
+            Db.SaveChanges();
 
             return RedirectToAction("Index");
         }
 
         public ActionResult Edit(int? id)
         {
-            if (!AuthorizationMiddleware.AdminAuthorized(Session)) return RedirectToAction("Index", "Home");
-
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var category = _db.Categories.Find(id);
+            var category = Db.Categories.Find(id);
 
             if (category == null)
             {
@@ -95,12 +80,13 @@ namespace Reviews.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "ID,Name")] Category category)
         {
-            if (!AuthorizationMiddleware.AdminAuthorized(Session)) return RedirectToAction("Index", "Home");
+            if (!ModelState.IsValid)
+            {
+                return View(category);
+            }
 
-            if (!ModelState.IsValid) return View(category);
-
-            _db.Entry(category).State = EntityState.Modified;
-            _db.SaveChanges();
+            Db.Entry(category).State = EntityState.Modified;
+            Db.SaveChanges();
 
             return RedirectToAction("Index");
         }
@@ -108,14 +94,12 @@ namespace Reviews.Controllers
         // GET: Categories/Delete/5
         public ActionResult Delete(int? id)
         {
-            if (!AuthorizationMiddleware.AdminAuthorized(Session)) return RedirectToAction("Index", "Home");
-
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var category = _db.Categories.Find(id);
+            var category = Db.Categories.Find(id);
 
             if (category == null)
             {
@@ -130,39 +114,27 @@ namespace Reviews.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            if (!AuthorizationMiddleware.AdminAuthorized(Session)) return RedirectToAction("Index", "Home");
-
-            var category = _db.Categories.Find(id);
-            var recipes = _db.Recipes.Where(x => x.Category.Id == id).ToList();
+            var category = Db.Categories.Find(id);
+            var recipes = Db.Recipes.Where(x => x.Category.Id == id).ToList();
 
             foreach (var currRecipe in recipes)
             {
-                var recipe = _db.Recipes.Find(currRecipe.Id);
+                var recipe = Db.Recipes.Find(currRecipe.Id);
 
-                var commentsToRemove = _db.Comments.Where(x => x.Review.Id == currRecipe.Id).ToList();
+                var commentsToRemove = Db.Comments.Where(x => x.Review.Id == currRecipe.Id).ToList();
                     
                 foreach (var currComment in commentsToRemove)
                 {
-                    _db.Comments.Remove(currComment);
+                    Db.Comments.Remove(currComment);
                 }
 
-                _db.Recipes.Remove(recipe);
+                Db.Recipes.Remove(recipe);
             }
 
-            _db.Categories.Remove(category);
-            _db.SaveChanges();
+            Db.Categories.Remove(category);
+            Db.SaveChanges();
 
             return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _db.Dispose();
-            }
-
-            base.Dispose(disposing);
         }
     }
 }

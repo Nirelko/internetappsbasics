@@ -3,21 +3,20 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using Reviews.Models;
-using Reviews.Models.Db;
 
 namespace Reviews.Controllers
 {
-    public class CommentsController : Controller
+    public class CommentsController : BaseController
     {
-        private readonly ModelsMapping _db = new ModelsMapping();
-
+        [AllowAnonymous]
         public ActionResult Index()
         {
-            var comments = _db.Comments.Include(c => c.User).Include(c => c.Review);
+            var comments = Db.Comments.Include(c => c.User).Include(c => c.Review);
 
             return View(comments.ToList());
         }
 
+        [AllowAnonymous]
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -25,7 +24,7 @@ namespace Reviews.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var comment = _db.Comments.Find(id);
+            var comment = Db.Comments.Find(id);
 
             if (comment == null)
             {
@@ -37,10 +36,8 @@ namespace Reviews.Controllers
 
         public ActionResult Create()
         {
-            if (!AuthorizationMiddleware.Authorized(Session)) return RedirectToAction("Index", "Home");
-
-            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username");
-            ViewBag.RecipeID = new SelectList(_db.Recipes, "ID", "Content");
+            ViewBag.ClientID = new SelectList(Db.Users, "ID", "Username");
+            ViewBag.RecipeID = new SelectList(Db.Recipes, "ID", "Content");
 
             return View();
         }
@@ -49,40 +46,36 @@ namespace Reviews.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "ID,ClientID,RecipeID,Content,CreationDate")] Comment comment)
         {
-            if (!AuthorizationMiddleware.Authorized(Session)) return RedirectToAction("Index", "Home");
-
             if (ModelState.IsValid)
             {
-                _db.Comments.Add(comment);
-                _db.SaveChanges();
+                Db.Comments.Add(comment);
+                Db.SaveChanges();
 
                 return RedirectToAction("Index");
             }
 
-            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username", comment.User.Id);
-            ViewBag.RecipeID = new SelectList(_db.Recipes, "ID", "Content", comment.Review.Id);
+            ViewBag.ClientID = new SelectList(Db.Users, "ID", "Username", comment.User.Id);
+            ViewBag.RecipeID = new SelectList(Db.Recipes, "ID", "Content", comment.Review.Id);
 
             return View(comment);
         }
 
         public ActionResult Edit(int? id)
         {
-            if (!AuthorizationMiddleware.Authorized(Session)) return RedirectToAction("Index", "Home");
-
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var comment = _db.Comments.Find(id);
+            var comment = Db.Comments.Find(id);
 
             if (comment == null)
             {
                 return HttpNotFound();
             }
 
-            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username", comment.User.Id);
-            ViewBag.RecipeID = new SelectList(_db.Recipes, "ID", "Content", comment.User.Id);
+            ViewBag.ClientID = new SelectList(Db.Users, "ID", "Username", comment.User.Id);
+            ViewBag.RecipeID = new SelectList(Db.Recipes, "ID", "Content", comment.User.Id);
 
             return View(comment);
         }
@@ -91,32 +84,28 @@ namespace Reviews.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "ID,ClientID,RecipeID,Content,CreationDate")] Comment comment)
         {
-            if (!AuthorizationMiddleware.Authorized(Session)) return RedirectToAction("Index", "Home");
-
             if (ModelState.IsValid)
             {
-                _db.Entry(comment).State = EntityState.Modified;
-                _db.SaveChanges();
+                Db.Entry(comment).State = EntityState.Modified;
+                Db.SaveChanges();
 
                 return RedirectToAction("Index");
             }
 
-            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username", comment.User.Id);
-            ViewBag.RecipeID = new SelectList(_db.Recipes, "ID", "Content", comment.Review.Id);
+            ViewBag.ClientID = new SelectList(Db.Users, "ID", "Username", comment.User.Id);
+            ViewBag.RecipeID = new SelectList(Db.Recipes, "ID", "Content", comment.Review.Id);
 
             return View(comment);
         }
 
         public ActionResult Delete(int? id)
         {
-            if (!AuthorizationMiddleware.Authorized(Session)) return RedirectToAction("Index", "Home");
-
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var comment = _db.Comments.Find(id);
+            var comment = Db.Comments.Find(id);
 
             if (comment == null)
             {
@@ -130,24 +119,12 @@ namespace Reviews.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            if (!AuthorizationMiddleware.Authorized(Session)) return RedirectToAction("Index", "Home");
+            var comment = Db.Comments.Find(id);
 
-            var comment = _db.Comments.Find(id);
-
-            _db.Comments.Remove(comment);
-            _db.SaveChanges();
+            Db.Comments.Remove(comment);
+            Db.SaveChanges();
 
             return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _db.Dispose();
-            }
-
-            base.Dispose(disposing);
         }
     }
 }

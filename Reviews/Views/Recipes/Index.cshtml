@@ -84,7 +84,7 @@
                 <a href="https://twitter.com/intent/tweet?screen_name=CoolRecipe&text=Check out this cool recipe for @recipe.Title ! http://localhost:53013/Recipes/Details/@recipe.Id" class="twitter-mention-button" data-show-count="false">Tweet to CoolRecipe</a>
                 <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
             </div>
-            <p>Posted on @Html.DisplayFor(modelItem => recipe.CreationDate) by @Html.ActionLink(recipe.User.Username, "Details", "Clients", new { id = recipe.User.Id }, null) - <b>@recipe.Comments.Count Comments</b> in @Html.DisplayFor(modelItem => recipe.Category.Name) category</p>
+            <p>Posted on @Html.DisplayFor(modelItem => recipe.CreationDate) by @Html.ActionLink(recipe.User.Username, "Details", "User", new { id = recipe.User.Id }, null) - <b>@recipe.Comments.Count Comments</b> in @Html.DisplayFor(modelItem => recipe.Category.Name) category</p>
 
             <div style="column-count: 3; column-gap:40px; column-rule: 1px solid lightgrey">
                 @Html.DisplayFor(modelItem => recipe.Content)

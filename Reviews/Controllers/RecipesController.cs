@@ -5,18 +5,16 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using Reviews.Models;
-using Reviews.Models.Db;
 using Reviews.ViewModels;
 
 namespace Reviews.Controllers
 {
-    public class RecipesController : Controller
+    public class RecipesController : BaseController
     {
-        private readonly ModelsMapping _db = new ModelsMapping();
-
+        [AllowAnonymous]
         public ActionResult Index()
         {
-            var recipes = _db.Recipes.Include(p => p.User).Include(p => p.Category);
+            var recipes = Db.Recipes.Include(p => p.User).Include(p => p.Category);
 
             ViewBag.RecommendedRecipe = GetRecommendedRecipe(recipes);
 
@@ -29,7 +27,7 @@ namespace Reviews.Controllers
 
             if (currentUser == null) return null;
 
-            var currentUserRecipes = _db.Users.Where(x => x.Id == currentUser.Id).Include(x => x.Reviews).SingleOrDefault()?.Reviews;
+            var currentUserRecipes = Db.Users.Where(x => x.Id == currentUser.Id).Include(x => x.Reviews).SingleOrDefault()?.Reviews;
 
             if (currentUserRecipes == null || !currentUserRecipes.Any()) return null;
 
@@ -47,6 +45,7 @@ namespace Reviews.Controllers
                 .FirstOrDefault(); ;
         }
 
+        [AllowAnonymous]
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -54,7 +53,7 @@ namespace Reviews.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var recipe = _db.Recipes.Find(id);
+            var recipe = Db.Recipes.Find(id);
 
             if (recipe == null)
             {
@@ -64,9 +63,10 @@ namespace Reviews.Controllers
             return View(recipe);
         }
 
+        [AllowAnonymous]
         public ActionResult RecommendedRecipeDetails()
         {
-            var recipes = _db.Recipes.Include(p => p.User).Include(p => p.Category);
+            var recipes = Db.Recipes.Include(p => p.User).Include(p => p.Category);
             var recommendedRecipe = GetRecommendedRecipe(recipes);
 
             if (recommendedRecipe == null)
@@ -77,6 +77,7 @@ namespace Reviews.Controllers
             return View("Details", recommendedRecipe);
         }
 
+        [AllowAnonymous]
         public ActionResult DetailsByTitle(string title)
         {
             if (title == null)
@@ -84,7 +85,7 @@ namespace Reviews.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var recipe = _db.Recipes.FirstOrDefault(x => x.Title == title);
+            var recipe = Db.Recipes.FirstOrDefault(x => x.Title == title);
 
             if (recipe == null)
             {
@@ -96,10 +97,8 @@ namespace Reviews.Controllers
 
         public ActionResult Create()
         {
-            if (!AuthorizationMiddleware.Authorized(Session)) return RedirectToAction("Index", "Home");
-
-            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username");
-            ViewBag.CategoryID = new SelectList(_db.Categories, "ID", "Name");
+            ViewBag.ClientID = new SelectList(Db.Users, "ID", "Username");
+            ViewBag.CategoryID = new SelectList(Db.Categories, "ID", "Name");
 
             return View();
         }
@@ -113,41 +112,37 @@ namespace Reviews.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            if (!AuthorizationMiddleware.Authorized(Session)) return RedirectToAction("Index", "Home");
-
             if (ModelState.IsValid)
             {
                 review.CreationDate = DateTime.Now;
-                _db.Recipes.Add(review);
-                _db.SaveChanges();
+                Db.Recipes.Add(review);
+                Db.SaveChanges();
 
                 return RedirectToAction("Index");
             }
 
-            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username", review.User.Id);
-            ViewBag.CategoryID = new SelectList(_db.Categories, "ID", "Name", review.Category.Id);
+            ViewBag.ClientID = new SelectList(Db.Users, "ID", "Username", review.User.Id);
+            ViewBag.CategoryID = new SelectList(Db.Categories, "ID", "Name", review.Category.Id);
 
             return View(review);
         }
 
         public ActionResult Edit(int? id)
         {
-            if (!AuthorizationMiddleware.Authorized(Session)) return RedirectToAction("Index", "Home");
-
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var recipe = _db.Recipes.Find(id);
+            var recipe = Db.Recipes.Find(id);
 
             if (recipe == null)
             {
                 return HttpNotFound();
             }
 
-            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username", recipe.User.Id);
-            ViewBag.CategoryID = new SelectList(_db.Categories, "ID", "Name", recipe.Category.Id);
+            ViewBag.ClientID = new SelectList(Db.Users, "ID", "Username", recipe.User.Id);
+            ViewBag.CategoryID = new SelectList(Db.Categories, "ID", "Name", recipe.Category.Id);
 
             return View(recipe);
         }
@@ -161,33 +156,29 @@ namespace Reviews.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            if (!AuthorizationMiddleware.Authorized(Session)) return RedirectToAction("Index", "Home");
-
             if (ModelState.IsValid)
             {
                 review.CreationDate = DateTime.Now;
-                _db.Entry(review).State = EntityState.Modified;
-                _db.SaveChanges();
+                Db.Entry(review).State = EntityState.Modified;
+                Db.SaveChanges();
 
                 return RedirectToAction("Index");
             }
 
-            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username", review.User.Id);
-            ViewBag.CategoryID = new SelectList(_db.Categories, "ID", "Name", review.Category.Id);
+            ViewBag.ClientID = new SelectList(Db.Users, "ID", "Username", review.User.Id);
+            ViewBag.CategoryID = new SelectList(Db.Categories, "ID", "Name", review.Category.Id);
 
             return View(review);
         }
 
         public ActionResult Delete(int? id)
         {
-            if (!AuthorizationMiddleware.Authorized(Session)) return RedirectToAction("Index", "Home");
-
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var recipe = _db.Recipes.Find(id);
+            var recipe = Db.Recipes.Find(id);
 
             if (recipe == null)
             {
@@ -201,27 +192,23 @@ namespace Reviews.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            if (!AuthorizationMiddleware.Authorized(Session)) return RedirectToAction("Index", "Home");
-
-            var recipe = _db.Recipes.Find(id);
-            var commentsToRemove = _db.Comments.Where(x => x.Review.Id == id).ToList();
+            var recipe = Db.Recipes.Find(id);
+            var commentsToRemove = Db.Comments.Where(x => x.Review.Id == id).ToList();
 
             foreach (var commentToRemove in commentsToRemove)
             {
-                var comment = _db.Comments.Find(commentToRemove.Id);
-                _db.Comments.Remove(comment);
+                var comment = Db.Comments.Find(commentToRemove.Id);
+                Db.Comments.Remove(comment);
             }
 
-            _db.Recipes.Remove(recipe);
-            _db.SaveChanges();
+            Db.Recipes.Remove(recipe);
+            Db.SaveChanges();
 
             return RedirectToAction("Index");
         }
 
         public ActionResult PostComment(int clientId, int recipeId, string content)
         {
-//            if (!AuthorizationMiddleware.Authorized(Session)) return RedirectToAction("Index", "Home");
-//
 //            var comment = new Comment
 //            {
 //                Content = content,
@@ -230,18 +217,19 @@ namespace Reviews.Controllers
 //                CreationDate = DateTime.Now
 //            };
 //
-//            _db.Comments.Add(comment);
-//            _db.SaveChanges();
+//            Db.Comments.Add(comment);
+//            Db.SaveChanges();
 //
 //            return RedirectToAction("Index");
             return null;
         }
 
+        [AllowAnonymous]
         public ActionResult Stats()
         {
             var query =
-                from recipe in _db.Recipes
-                join client in _db.Users on recipe.User.Id equals client.Id
+                from recipe in Db.Recipes
+                join client in Db.Users on recipe.User.Id equals client.Id
                 select new ReviewCommentViewModel
                 {
                     Title = recipe.Title,
@@ -252,11 +240,12 @@ namespace Reviews.Controllers
             return View(query.ToList());
         }
 
+        [AllowAnonymous]
         public ActionResult StatsJson()
         {
             var query =
-                from recipe in _db.Recipes
-                join client in _db.Users on recipe.User.Id equals client.Id
+                from recipe in Db.Recipes
+                join client in Db.Users on recipe.User.Id equals client.Id
                 select new ReviewCommentViewModel
                 {
                     Title = recipe.Title,
@@ -270,11 +259,12 @@ namespace Reviews.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult Search(string content, string title, DateTime? date)
         {
             var queryRecipes = new List<Review>();
 
-            foreach (var recipe in _db.Recipes)
+            foreach (var recipe in Db.Recipes)
             {
                 if (!string.IsNullOrEmpty(content) && recipe.Content.ToLower().Contains(content.ToLower()))
                 {
@@ -297,17 +287,6 @@ namespace Reviews.Controllers
             }
 
             return View(queryRecipes.OrderByDescending(x => x.CreationDate));
-        }
-
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _db.Dispose();
-            }
-
-            base.Dispose(disposing);
         }
     }
 }

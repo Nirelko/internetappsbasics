@@ -196,8 +196,11 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
-    <Compile Include="Controllers\AuthorizationMiddleware.cs" />
-    <Compile Include="Controllers\ClientsController.cs" />
+    <Compile Include="Attributes\AdminRequiredAttribute.cs" />
+    <Compile Include="Attributes\ControllerLoginRequired.cs" />
+    <Compile Include="Filters\ReviewsAuthorizeFilter.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\CommentsController.cs" />
     <Compile Include="Controllers\CategoriesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -260,11 +263,11 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\Clients\Create.cshtml" />
-    <Content Include="Views\Clients\Delete.cshtml" />
-    <Content Include="Views\Clients\Details.cshtml" />
-    <Content Include="Views\Clients\Edit.cshtml" />
-    <Content Include="Views\Clients\Index.cshtml" />
+    <Content Include="Views\User\Create.cshtml" />
+    <Content Include="Views\User\Delete.cshtml" />
+    <Content Include="Views\User\Details.cshtml" />
+    <Content Include="Views\User\Edit.cshtml" />
+    <Content Include="Views\User\Index.cshtml" />
     <Content Include="Views\Recipes\Create.cshtml" />
     <Content Include="Views\Recipes\Delete.cshtml" />
     <Content Include="Views\Recipes\Details.cshtml" />
@@ -280,12 +283,12 @@
     <Content Include="Views\Comments\Details.cshtml" />
     <Content Include="Views\Comments\Edit.cshtml" />
     <Content Include="Views\Comments\Index.cshtml" />
-    <Content Include="Views\Clients\RecipesLogin.cshtml" />
-    <Content Include="Views\Clients\FailedLogin.cshtml" />
-    <Content Include="Views\Clients\Stats.cshtml" />
+    <Content Include="Views\User\RecipesLogin.cshtml" />
+    <Content Include="Views\User\FailedLogin.cshtml" />
+    <Content Include="Views\User\Stats.cshtml" />
     <Content Include="Views\Recipes\Stats.cshtml" />
     <Content Include="Views\Recipes\Search.cshtml" />
-    <Content Include="Views\Clients\Search.cshtml" />
+    <Content Include="Views\User\Search.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

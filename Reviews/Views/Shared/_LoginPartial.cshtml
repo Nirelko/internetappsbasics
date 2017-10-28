@@ -6,10 +6,10 @@
     @if (clnt == null)
     {
         <li class="nav-item">
-            @Html.ActionLink("Register", "Create", "Clients", new {area = ""}, new {@class = "nav-link"})
+            @Html.ActionLink("Register", "Create", "User", new {area = ""}, new {@class = "nav-link"})
         </li>
         <li class="nav-item">
-            @Html.ActionLink("Login", "RecipesLogin", "Clients", new {area = ""}, new {@class = "nav-link"})
+            @Html.ActionLink("Login", "RecipesLogin", "User", new {area = ""}, new {@class = "nav-link"})
         </li>
     }
     else
@@ -20,7 +20,7 @@
             </a>
         </li>
         <li class="nav-item" style="margin-right: 10px">
-            @Html.ActionLink("Log Out", "Logout", "Clients", new {area = ""}, new {@class = "nav-link"})
+            @Html.ActionLink("Log Out", "Logout", "User", new {area = ""}, new {@class = "nav-link"})
         </li>
     }
 </ul>
