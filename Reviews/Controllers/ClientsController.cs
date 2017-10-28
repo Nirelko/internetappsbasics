@@ -159,9 +159,9 @@ namespace Reviews.Controllers
 
             var client = _db.Users.Find(id);
 
-            var recipes = _db.Recipes.Where(x => x.ClientId == id).ToList();
+            var recipes = _db.Recipes.Where(x => x.User.Id == id).ToList();
 
-            foreach (var currComment in _db.Comments.Where(x => x.ClientId == id).ToList())
+            foreach (var currComment in _db.Comments.Where(x => x.User.Id == id).ToList())
             {
                 _db.Comments.Remove(currComment);
             }
@@ -187,8 +187,8 @@ namespace Reviews.Controllers
             // join select for users and their recipes
             var query =
                 from client in _db.Users
-                join recipe in _db.Recipes on client.Id equals recipe.ClientId
-                select new UserRecipesViewModel
+                join recipe in _db.Recipes on client.Id equals recipe.User.Id
+                select new UserReviewsViewModel
                 {
                     UserName = client.Username,
                     FirstName = client.FirstName,

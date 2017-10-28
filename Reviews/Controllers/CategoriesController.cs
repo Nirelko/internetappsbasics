@@ -139,7 +139,7 @@ namespace Reviews.Controllers
             {
                 var recipe = _db.Recipes.Find(currRecipe.Id);
 
-                var commentsToRemove = _db.Comments.Where(x => x.RecipeId == currRecipe.Id).ToList();
+                var commentsToRemove = _db.Comments.Where(x => x.Review.Id == currRecipe.Id).ToList();
                     
                 foreach (var currComment in commentsToRemove)
                 {

@@ -208,8 +208,8 @@
     <Compile Include="Models\BaseModel.cs" />
     <Compile Include="Models\Db\ApplicationDbContext.cs" />
     <Compile Include="Models\Gender.cs" />
-    <Compile Include="ViewModels\RecipeCommentViewModel.cs" />
-    <Compile Include="ViewModels\UserRecipesViewModel.cs" />
+    <Compile Include="ViewModels\ReviewCommentViewModel.cs" />
+    <Compile Include="ViewModels\UserReviewsViewModel.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\Db\ModelsMapping.cs" />

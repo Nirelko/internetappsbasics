@@ -59,8 +59,8 @@ namespace Reviews.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username", comment.ClientId);
-            ViewBag.RecipeID = new SelectList(_db.Recipes, "ID", "Content", comment.RecipeId);
+            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username", comment.User.Id);
+            ViewBag.RecipeID = new SelectList(_db.Recipes, "ID", "Content", comment.Review.Id);
 
             return View(comment);
         }
@@ -81,8 +81,8 @@ namespace Reviews.Controllers
                 return HttpNotFound();
             }
 
-            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username", comment.ClientId);
-            ViewBag.RecipeID = new SelectList(_db.Recipes, "ID", "Content", comment.RecipeId);
+            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username", comment.User.Id);
+            ViewBag.RecipeID = new SelectList(_db.Recipes, "ID", "Content", comment.User.Id);
 
             return View(comment);
         }
@@ -101,8 +101,8 @@ namespace Reviews.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username", comment.ClientId);
-            ViewBag.RecipeID = new SelectList(_db.Recipes, "ID", "Content", comment.RecipeId);
+            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username", comment.User.Id);
+            ViewBag.RecipeID = new SelectList(_db.Recipes, "ID", "Content", comment.Review.Id);
 
             return View(comment);
         }

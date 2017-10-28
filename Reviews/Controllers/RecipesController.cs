@@ -38,7 +38,7 @@ namespace Reviews.Controllers
             // as his recommended review
             Category currUserTopCategory = currentUserRecipes
                 .GroupBy(x => x.Category)
-                .OrderByDescending(x => x.Key.Reviews.Count(recipe => recipe.ClientId == currentUser.Id))
+                .OrderByDescending(x => x.Key.Reviews.Count(recipe => recipe.User.Id == currentUser.Id))
                 .FirstOrDefault()?.Key;
 
             return allRecipes
@@ -108,7 +108,7 @@ namespace Reviews.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "ID,clientId,CategoryID,Title,Content")] Review review)
         {
-            if (review.Content == null || review.Title == null || review.CategoryId == 0)
+            if (review.Content == null || review.Title == null || review.Category.Id == 0)
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -124,8 +124,8 @@ namespace Reviews.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username", review.ClientId);
-            ViewBag.CategoryID = new SelectList(_db.Categories, "ID", "Name", review.CategoryId);
+            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username", review.User.Id);
+            ViewBag.CategoryID = new SelectList(_db.Categories, "ID", "Name", review.Category.Id);
 
             return View(review);
         }
@@ -146,8 +146,8 @@ namespace Reviews.Controllers
                 return HttpNotFound();
             }
 
-            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username", recipe.ClientId);
-            ViewBag.CategoryID = new SelectList(_db.Categories, "ID", "Name", recipe.CategoryId);
+            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username", recipe.User.Id);
+            ViewBag.CategoryID = new SelectList(_db.Categories, "ID", "Name", recipe.Category.Id);
 
             return View(recipe);
         }
@@ -172,8 +172,8 @@ namespace Reviews.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username", review.ClientId);
-            ViewBag.CategoryID = new SelectList(_db.Categories, "ID", "Name", review.CategoryId);
+            ViewBag.ClientID = new SelectList(_db.Users, "ID", "Username", review.User.Id);
+            ViewBag.CategoryID = new SelectList(_db.Categories, "ID", "Name", review.Category.Id);
 
             return View(review);
         }
@@ -220,28 +220,29 @@ namespace Reviews.Controllers
 
         public ActionResult PostComment(int clientId, int recipeId, string content)
         {
-            if (!AuthorizationMiddleware.Authorized(Session)) return RedirectToAction("Index", "Home");
-
-            var comment = new Comment
-            {
-                Content = content,
-                ClientId = clientId,
-                RecipeId = recipeId,
-                CreationDate = DateTime.Now
-            };
-
-            _db.Comments.Add(comment);
-            _db.SaveChanges();
-
-            return RedirectToAction("Index");
+//            if (!AuthorizationMiddleware.Authorized(Session)) return RedirectToAction("Index", "Home");
+//
+//            var comment = new Comment
+//            {
+//                Content = content,
+//                ClientId = clientId,
+//                RecipeId = recipeId,
+//                CreationDate = DateTime.Now
+//            };
+//
+//            _db.Comments.Add(comment);
+//            _db.SaveChanges();
+//
+//            return RedirectToAction("Index");
+            return null;
         }
 
         public ActionResult Stats()
         {
             var query =
                 from recipe in _db.Recipes
-                join client in _db.Users on recipe.ClientId equals client.Id
-                select new RecipeCommentViewModel
+                join client in _db.Users on recipe.User.Id equals client.Id
+                select new ReviewCommentViewModel
                 {
                     Title = recipe.Title,
                     NumberOfComment = recipe.Comments.Count,
@@ -255,8 +256,8 @@ namespace Reviews.Controllers
         {
             var query =
                 from recipe in _db.Recipes
-                join client in _db.Users on recipe.ClientId equals client.Id
-                select new RecipeCommentViewModel
+                join client in _db.Users on recipe.User.Id equals client.Id
+                select new ReviewCommentViewModel
                 {
                     Title = recipe.Title,
                     NumberOfComment = recipe.Comments.Count,

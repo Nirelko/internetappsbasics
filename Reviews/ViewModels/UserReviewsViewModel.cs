@@ -2,7 +2,7 @@
 
 namespace Reviews.ViewModels
 {
-    public class UserRecipesViewModel
+    public class UserReviewsViewModel
     {
         public int Id { get; set; }
 
