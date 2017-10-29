@@ -18,7 +18,19 @@ namespace Reviews.Models
 
         [DataType(DataType.Date)]
         [DisplayName("Created at")]
-        public DateTime CreationDate { get; set; }
+        public DateTime CreationDate 
+        {
+            get
+            {
+                return this.dateCreated.HasValue
+                   ? this.dateCreated.Value
+                   : DateTime.Now;
+            }
+
+            set { this.dateCreated = value; }
+        }
+
+        private DateTime? dateCreated = null;
 
         [Required]
         [DisplayName("Category")]
