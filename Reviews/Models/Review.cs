@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Reviews.Models
 {
@@ -18,27 +19,21 @@ namespace Reviews.Models
 
         [DataType(DataType.Date)]
         [DisplayName("Created at")]
-        public DateTime CreationDate 
-        {
-            get
-            {
-                return this.dateCreated.HasValue
-                   ? this.dateCreated.Value
-                   : DateTime.Now;
-            }
-
-            set { this.dateCreated = value; }
-        }
-
-        private DateTime? dateCreated = null;
+        public DateTime CreationDate { get; set; }
 
         [Required]
         [DisplayName("Category")]
+        [ForeignKey("Category")]
+        public int CategoryID { get; set; }
         public virtual Category Category { get; set; }
+        
 
         [Required]
         [DisplayName("Posting User")]
+        [ForeignKey("User")]
+        public int UserID { get; set; }
         public virtual User User { get; set; }
+        
 
         public virtual List<Comment> Comments { get; set; }
     }

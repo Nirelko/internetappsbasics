@@ -107,7 +107,7 @@ namespace Reviews.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "ID,userId,CategoryID,Title,Content")] Review review)
         {
-            if (review.Content == null || review.Title == null || review.Category.Id == 0)
+            if (review.Content == null || review.Title == null || review.CategoryID == 0)
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -121,8 +121,7 @@ namespace Reviews.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.UserID = new SelectList(Db.Users, "ID", "Username", review.User.Id);
-            ViewBag.CategoryID = new SelectList(Db.Categories, "ID", "Name", review.Category.Id);
+            ReloadViewBag(review);
 
             return View(review);
         }
@@ -134,17 +133,22 @@ namespace Reviews.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var recipe = Db.Reviews.Find(id);
+            var review = Db.Reviews.Find(id);
 
-            if (recipe == null)
+            if (review == null)
             {
                 return HttpNotFound();
             }
 
-            ViewBag.UserID = new SelectList(Db.Users, "ID", "Username", recipe.User.Id);
-            ViewBag.CategoryID = new SelectList(Db.Categories, "ID", "Name", recipe.Category.Id);
+            ReloadViewBag(review);
 
-            return View(recipe);
+            return View(review);
+        }
+
+        private void ReloadViewBag(Review review)
+        {
+            ViewBag.UserID = new SelectList(Db.Users, "ID", "Username", review.UserID);
+            ViewBag.CategoryID = new SelectList(Db.Categories, "ID", "Name", review.CategoryID);
         }
 
         [HttpPost]
@@ -165,8 +169,7 @@ namespace Reviews.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.UserID = new SelectList(Db.Users, "ID", "Username", review.User.Id);
-            ViewBag.CategoryID = new SelectList(Db.Categories, "ID", "Name", review.Category.Id);
+            ReloadViewBag(review);
 
             return View(review);
         }
@@ -178,21 +181,21 @@ namespace Reviews.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var recipe = Db.Reviews.Find(id);
+            var review = Db.Reviews.Find(id);
 
-            if (recipe == null)
+            if (review == null)
             {
                 return HttpNotFound();
             }
 
-            return View(recipe);
+            return View(review);
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            var recipe = Db.Reviews.Find(id);
+            var review = Db.Reviews.Find(id);
             var commentsToRemove = Db.Comments.Where(x => x.Review.Id == id).ToList();
 
             foreach (var commentToRemove in commentsToRemove)
@@ -201,7 +204,7 @@ namespace Reviews.Controllers
                 Db.Comments.Remove(comment);
             }
 
-            Db.Reviews.Remove(recipe);
+            Db.Reviews.Remove(review);
             Db.SaveChanges();
 
             return RedirectToAction("Index");
@@ -228,12 +231,12 @@ namespace Reviews.Controllers
         public ActionResult Stats()
         {
             var query =
-                from recipe in Db.Reviews
-                join user in Db.Users on recipe.User.Id equals user.Id
+                from review in Db.Reviews
+                join user in Db.Users on review.User.Id equals user.Id
                 select new ReviewCommentViewModel
                 {
-                    Title = recipe.Title,
-                    NumberOfComment = recipe.Comments.Count,
+                    Title = review.Title,
+                    NumberOfComment = review.Comments.Count,
                     AuthorFullName = user.FirstName + " " + user.LastName
                 };
 
@@ -244,12 +247,12 @@ namespace Reviews.Controllers
         public ActionResult StatsJson()
         {
             var query =
-                from recipe in Db.Reviews
-                join user in Db.Users on recipe.User.Id equals user.Id
+                from review in Db.Reviews
+                join user in Db.Users on review.User.Id equals user.Id
                 select new ReviewCommentViewModel
                 {
-                    Title = recipe.Title,
-                    NumberOfComment = recipe.Comments.Count,
+                    Title = review.Title,
+                    NumberOfComment = review.Comments.Count,
                     AuthorFullName = user.FirstName + " " + user.LastName
                 };
 
@@ -262,31 +265,31 @@ namespace Reviews.Controllers
         [AllowAnonymous]
         public ActionResult Search(string content, string title, DateTime? date)
         {
-            var queryRecipes = new List<Review>();
+            var queryReviews = new List<Review>();
 
-            foreach (var recipe in Db.Reviews)
+            foreach (var review in Db.Reviews)
             {
-                if (!string.IsNullOrEmpty(content) && recipe.Content.ToLower().Contains(content.ToLower()))
+                if (!string.IsNullOrEmpty(content) && review.Content.ToLower().Contains(content.ToLower()))
                 {
-                    queryRecipes.Add(recipe);
+                    queryReviews.Add(review);
                 }
-                else if (!string.IsNullOrEmpty(title) && recipe.Title.ToLower().Contains(title.ToLower()))
+                else if (!string.IsNullOrEmpty(title) && review.Title.ToLower().Contains(title.ToLower()))
                 {
-                    queryRecipes.Add(recipe);
+                    queryReviews.Add(review);
                 }
                 else if (date != null)
                 {
-                    var formattedDateRecipe = recipe.CreationDate.ToString("MM/dd/yyyy");
+                    var formattedDateRecipe = review.CreationDate.ToString("MM/dd/yyyy");
                     var formattedDate = date.Value.ToString("MM/dd/yyyy");
 
                     if (formattedDateRecipe.Equals(formattedDate))
                     {
-                        queryRecipes.Add(recipe);
+                        queryReviews.Add(review);
                     }
                 }
             }
 
-            return View(queryRecipes.OrderByDescending(x => x.CreationDate));
+            return View(queryReviews.OrderByDescending(x => x.CreationDate));
         }
     }
 }

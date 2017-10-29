@@ -37,7 +37,7 @@ namespace Reviews.Controllers
         public ActionResult Create()
         {
             ViewBag.UserID = new SelectList(Db.Users, "ID", "Username");
-            ViewBag.RecipeID = new SelectList(Db.Reviews, "ID", "Content");
+            ViewBag.ReviewID = new SelectList(Db.Reviews, "ID", "Content");
 
             return View();
         }
@@ -54,8 +54,8 @@ namespace Reviews.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.UserID = new SelectList(Db.Users, "ID", "Username", comment.User.Id);
-            ViewBag.RecipeID = new SelectList(Db.Reviews, "ID", "Content", comment.Review.Id);
+            ViewBag.UserID = new SelectList(Db.Users, "ID", "Username", comment.UserID);
+            ViewBag.ReviewID = new SelectList(Db.Reviews, "ID", "Content", comment.ReviewID);
 
             return View(comment);
         }
@@ -74,8 +74,8 @@ namespace Reviews.Controllers
                 return HttpNotFound();
             }
 
-            ViewBag.UserID = new SelectList(Db.Users, "ID", "Username", comment.User.Id);
-            ViewBag.RecipeID = new SelectList(Db.Reviews, "ID", "Content", comment.User.Id);
+            ViewBag.UserID = new SelectList(Db.Users, "ID", "Username", comment.UserID);
+            ViewBag.ReviewID = new SelectList(Db.Reviews, "ID", "Content", comment.ReviewID);
 
             return View(comment);
         }
@@ -92,8 +92,8 @@ namespace Reviews.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.UserID = new SelectList(Db.Users, "ID", "Username", comment.User.Id);
-            ViewBag.RecipeID = new SelectList(Db.Reviews, "ID", "Content", comment.Review.Id);
+            ViewBag.UserID = new SelectList(Db.Users, "ID", "Username", comment.UserID);
+            ViewBag.ReviewID = new SelectList(Db.Reviews, "ID", "Content", comment.ReviewID);
 
             return View(comment);
         }
