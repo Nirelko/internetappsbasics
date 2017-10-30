@@ -293,6 +293,7 @@
     <Content Include="Views\Reviews\Stats.cshtml" />
     <Content Include="Views\Reviews\Search.cshtml" />
     <Content Include="Views\User\Search.cshtml" />
+    <Content Include="Views\Reviews\DetailsByTitle.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

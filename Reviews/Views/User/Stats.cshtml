@@ -98,8 +98,8 @@
 </section>
 <script>
         $.ajax({
-            url: '/Users/GetGroupByGender',
-            success: function (data) {
+            url: '/User/GetGroupByGender',
+            success: (data) => {
                 createPopularUsersGraph(data, "popular-gender-graph");
             }
         })
