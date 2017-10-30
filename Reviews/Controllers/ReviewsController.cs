@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -11,14 +10,18 @@ namespace Reviews.Controllers
 {
     public class ReviewsController : BaseController
     {
+        public IQueryable<Review> LoadedQueryableReviewses { get; set; }
+        public ReviewsController()
+        {
+            LoadedQueryableReviewses = Db.Reviews.Include(p => p.User).Include(p => p.Category);
+        }
+
         [AllowAnonymous]
         public ActionResult Index()
         {
-            var reviews = Db.Reviews.Include(p => p.User).Include(p => p.Category);
+            ViewBag.RecommendedReview = GetRecommendedReview(LoadedQueryableReviewses);
 
-            ViewBag.RecommendedReview = GetRecommendedReview(reviews);
-
-            return View(reviews.ToList());
+            return View(LoadedQueryableReviewses.ToList());
         }
 
         /// <summary>
@@ -29,24 +32,26 @@ namespace Reviews.Controllers
         private Review GetRecommendedReview(IQueryable<Review> reviews)
         {
             var currentUser = (User)Session["User"];
-
-            if (currentUser == null) {
+            if (currentUser == null)
+            {
                 return null;
             }
 
             var currentUserReviews  = reviews.Where(x => x.UserID == currentUser.Id).ToList();
+            if (!currentUserReviews.Any())
+            {
+                return null;
+            }
 
-            if (!currentUserReviews.Any()) return null;
-
-            Category userMostReviewedCategory = currentUserReviews
+            var userMostReviewedCategory = currentUserReviews
                 .GroupBy(x => x.Category)
                 .OrderByDescending(x => x.Key.Reviews.Count(review => review.User.Id == currentUser.Id))
-                .FirstOrDefault()?.Key;
+                .First().Key;
 
             return reviews
                 .Where(x => x.Category.Id == userMostReviewedCategory.Id)
                 .OrderByDescending(x => x.Comments.Count)
-                .FirstOrDefault(); ;
+                .FirstOrDefault();
         }
 
         [AllowAnonymous]
@@ -58,7 +63,6 @@ namespace Reviews.Controllers
             }
 
             var review = Db.Reviews.Find(id);
-
             if (review == null)
             {
                 return HttpNotFound();
@@ -70,9 +74,7 @@ namespace Reviews.Controllers
         [AllowAnonymous]
         public ActionResult RecommendedReview()
         {
-            var reviews = Db.Reviews.Include(p => p.User).Include(p => p.Category);
-            var recommendedReview = GetRecommendedReview(reviews);
-
+            var recommendedReview = GetRecommendedReview(LoadedQueryableReviewses);
             if (recommendedReview == null)
             {
                 return HttpNotFound();
@@ -98,18 +100,18 @@ namespace Reviews.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                review.CreationDate = DateTime.Now;
-                Db.Reviews.Add(review);
-                Db.SaveChanges();
+                ReloadViewBag(review);
 
-                return RedirectToAction("Index");
+                return View(review);
             }
 
-            ReloadViewBag(review);
+            review.CreationDate = DateTime.Now;
+            Db.Reviews.Add(review);
+            Db.SaveChanges();
 
-            return View(review);
+            return RedirectToAction("Index");
         }
 
         public ActionResult Edit(int? id)
@@ -120,7 +122,6 @@ namespace Reviews.Controllers
             }
 
             var review = Db.Reviews.Find(id);
-
             if (review == null)
             {
                 return HttpNotFound();
@@ -146,18 +147,18 @@ namespace Reviews.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                review.CreationDate = DateTime.Now;
-                Db.Entry(review).State = EntityState.Modified;
-                Db.SaveChanges();
+                ReloadViewBag(review);
 
-                return RedirectToAction("Index");
+                return View(review);
             }
 
-            ReloadViewBag(review);
+            review.CreationDate = DateTime.Now;
+            Db.Entry(review).State = EntityState.Modified;
+            Db.SaveChanges();
 
-            return View(review);
+            return RedirectToAction("Index");
         }
 
         public ActionResult Delete(int? id)
@@ -168,7 +169,6 @@ namespace Reviews.Controllers
             }
 
             var review = Db.Reviews.Find(id);
-
             if (review == null)
             {
                 return HttpNotFound();
@@ -182,15 +182,15 @@ namespace Reviews.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             var review = Db.Reviews.Find(id);
-            var commentsToRemove = Db.Comments.Where(x => x.Review.Id == id).ToList();
-
-            foreach (var commentToRemove in commentsToRemove)
+            if (review == null)
             {
-                var comment = Db.Comments.Find(commentToRemove.Id);
-                Db.Comments.Remove(comment);
+                return HttpNotFound();
             }
 
+            Db.Comments.Where(x => x.Review.Id == id).ToList().ForEach(x => Db.Comments.Remove(x));
+
             Db.Reviews.Remove(review);
+
             Db.SaveChanges();
 
             return RedirectToAction("Index");
@@ -198,15 +198,14 @@ namespace Reviews.Controllers
 
         public ActionResult PostComment(int userId, int reviewId, string content)
         {
-            var comment = new Comment
+            Db.Comments.Add(new Comment
             {
                 Content = content,
                 UserID = userId,
                 ReviewID = reviewId,
                 CreationDate = DateTime.Now
-            };
+            });
 
-            Db.Comments.Add(comment);
             Db.SaveChanges();
 
             return RedirectToAction("Index");
@@ -215,66 +214,48 @@ namespace Reviews.Controllers
         [AllowAnonymous]
         public ActionResult Stats()
         {
-            var query =
+            var reviewCommentViewModels =
                 from review in Db.Reviews
                 join user in Db.Users on review.User.Id equals user.Id
                 select new ReviewCommentViewModel
                 {
                     Title = review.Title,
                     NumberOfComment = review.Comments.Count,
-                    AuthorFullName = user.FirstName + " " + user.LastName
+                    AuthorFullName = $"{user.FirstName} {user.LastName}"
                 };
 
-            return View(query.ToList());
+            return View(reviewCommentViewModels.ToList());
         }
 
         [AllowAnonymous]
         public ActionResult StatsJson()
         {
-            var query =
+            var reviewCommentViewModels =
                 from review in Db.Reviews
                 join user in Db.Users on review.User.Id equals user.Id
                 select new ReviewCommentViewModel
                 {
                     Title = review.Title,
                     NumberOfComment = review.Comments.Count,
-                    AuthorFullName = user.FirstName + " " + user.LastName
+                    AuthorFullName = $"{user.FirstName} {user.LastName}"
                 };
 
-            var data = Json(query.ToList(), JsonRequestBehavior.AllowGet);
-
-            return data;
+            return Json(reviewCommentViewModels.ToList(), JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
         [AllowAnonymous]
         public ActionResult Search(string content, string title, DateTime? date)
         {
-            var queryReviews = new List<Review>();
+            var dayAfterDate = date?.AddDays(1);
 
-            foreach (var review in Db.Reviews)
-            {
-                if (!string.IsNullOrEmpty(content) && review.Content.ToLower().Contains(content.ToLower()))
-                {
-                    queryReviews.Add(review);
-                }
-                else if (!string.IsNullOrEmpty(title) && review.Title.ToLower().Contains(title.ToLower()))
-                {
-                    queryReviews.Add(review);
-                }
-                else if (date != null)
-                {
-                    var formattedDateReview = review.CreationDate.ToString("MM/dd/yyyy");
-                    var formattedDate = date.Value.ToString("MM/dd/yyyy");
-
-                    if (formattedDateReview.Equals(formattedDate))
-                    {
-                        queryReviews.Add(review);
-                    }
-                }
-            }
-
-            return View(queryReviews.OrderByDescending(x => x.CreationDate));
+            return View(Db.Reviews
+                .Where(review =>
+                    (!string.IsNullOrEmpty(content) && review.Content.ToLower().Contains(content.ToLower())) ||
+                    (!string.IsNullOrEmpty(title) && review.Title.ToLower().Contains(title.ToLower())) ||
+                    (date.HasValue && dayAfterDate.HasValue && date < review.CreationDate && review.CreationDate < dayAfterDate))
+                .OrderByDescending(x => x.CreationDate)
+                .ToList());
         }
     }
 }
