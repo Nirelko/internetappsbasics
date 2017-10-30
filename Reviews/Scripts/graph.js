@@ -43,11 +43,11 @@ function createPopularUsersGraph(data, id) {
         .text(function (d) { return d.data.Name; });
 }
 
-function createPopularRecipesGraph(data) {
+function createPopularReviewsGraph(data) {
 
     var margin = { top: 20, right: 20, bottom: 70, left: 40 },
-        width = 600 - margin.left - margin.right,
-        height = 300 - margin.top - margin.bottom;
+        width = 600,
+        height = 300;
 
     // set the ranges
     var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
@@ -63,7 +63,7 @@ function createPopularRecipesGraph(data) {
         .ticks(10);
 
     // add the SVG element
-    var svg = d3.select("#popular-recipes-graph").append("svg")
+    var svg = d3.select("#popular-reviews-graph").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -96,8 +96,8 @@ function createPopularRecipesGraph(data) {
         .call(yAxis)
         .append("text")
         .attr("transform", "rotate(-90)")
-        .attr("y", 5)
-        .attr("dy", ".71em")
+        .attr("y", 0)
+        .attr("dy", "1em")
         .style("text-anchor", "end")
         .text("NumberOfComment");
 
@@ -106,8 +106,8 @@ function createPopularRecipesGraph(data) {
         .data(data)
         .enter().append("rect")
         .attr("class", "bar")
-        .attr("x", function (d) { return x(d.Title); })
-        .attr("width", x.rangeBand())
+        .attr("x", function (d) { return x(d.Title)+10; })
+        .attr("width", x.rangeBand()/2)
         .attr("y", function (d) { return y(d.NumberOfComment); })
         .attr("height", function (d) { return height - y(d.NumberOfComment); });
 }

@@ -14,33 +14,37 @@ namespace Reviews.Controllers
         [AllowAnonymous]
         public ActionResult Index()
         {
-            var recipes = Db.Reviews.Include(p => p.User).Include(p => p.Category);
+            var reviews = Db.Reviews.Include(p => p.User).Include(p => p.Category);
 
-            ViewBag.RecommendedRecipe = GetRecommendedRecipe(recipes);
+            ViewBag.RecommendedReview = GetRecommendedReview(reviews);
 
-            return View(recipes.ToList());
+            return View(reviews.ToList());
         }
 
-        private Review GetRecommendedRecipe(IQueryable<Review> allRecipes)
+        /// <summary>
+        /// Returns the most commented review in the most reviewed category by the user
+        /// </summary>
+        /// <param name="reviews"></param>
+        /// <returns></returns>
+        private Review GetRecommendedReview(IQueryable<Review> reviews)
         {
             var currentUser = (User)Session["User"];
 
-            if (currentUser == null) return null;
+            if (currentUser == null) {
+                return null;
+            }
 
-            var currentUserRecipes = Db.Users.Where(x => x.Id == currentUser.Id).Include(x => x.Reviews).SingleOrDefault()?.Reviews;
+            var currentUserReviews  = reviews.Where(x => x.UserID == currentUser.Id).ToList();
 
-            if (currentUserRecipes == null || !currentUserRecipes.Any()) return null;
+            if (!currentUserReviews.Any()) return null;
 
-            // Find the food category in which the current user wrote most of his recipes, and then get the
-            // review with the biggest number of comments in this category and display it to the current user
-            // as his recommended review
-            Category currUserTopCategory = currentUserRecipes
+            Category userMostReviewedCategory = currentUserReviews
                 .GroupBy(x => x.Category)
-                .OrderByDescending(x => x.Key.Reviews.Count(recipe => recipe.User.Id == currentUser.Id))
+                .OrderByDescending(x => x.Key.Reviews.Count(review => review.User.Id == currentUser.Id))
                 .FirstOrDefault()?.Key;
 
-            return allRecipes
-                .Where(x => x.Category.Id == currUserTopCategory.Id)
+            return reviews
+                .Where(x => x.Category.Id == userMostReviewedCategory.Id)
                 .OrderByDescending(x => x.Comments.Count)
                 .FirstOrDefault(); ;
         }
@@ -53,46 +57,28 @@ namespace Reviews.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var recipe = Db.Reviews.Find(id);
+            var review = Db.Reviews.Find(id);
 
-            if (recipe == null)
+            if (review == null)
             {
                 return HttpNotFound();
             }
 
-            return View(recipe);
+            return View(review);
         }
 
         [AllowAnonymous]
-        public ActionResult RecommendedRecipeDetails()
+        public ActionResult RecommendedReview()
         {
-            var recipes = Db.Reviews.Include(p => p.User).Include(p => p.Category);
-            var recommendedRecipe = GetRecommendedRecipe(recipes);
+            var reviews = Db.Reviews.Include(p => p.User).Include(p => p.Category);
+            var recommendedReview = GetRecommendedReview(reviews);
 
-            if (recommendedRecipe == null)
+            if (recommendedReview == null)
             {
                 return HttpNotFound();
             }
 
-            return View("Details", recommendedRecipe);
-        }
-
-        [AllowAnonymous]
-        public ActionResult DetailsByTitle(string title)
-        {
-            if (title == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            var recipe = Db.Reviews.FirstOrDefault(x => x.Title == title);
-
-            if (recipe == null)
-            {
-                return HttpNotFound();
-            }
-
-            return View("Details", recipe);
+            return View("Details", recommendedReview);
         }
 
         public ActionResult Create()
@@ -210,21 +196,20 @@ namespace Reviews.Controllers
             return RedirectToAction("Index");
         }
 
-        public ActionResult PostComment(int userId, int recipeId, string content)
+        public ActionResult PostComment(int userId, int reviewId, string content)
         {
-//            var comment = new Comment
-//            {
-//                Content = content,
-//                UserId = userId,
-//                RecipeId = recipeId,
-//                CreationDate = DateTime.Now
-//            };
-//
-//            Db.Comments.Add(comment);
-//            Db.SaveChanges();
-//
-//            return RedirectToAction("Index");
-            return null;
+            var comment = new Comment
+            {
+                Content = content,
+                UserID = userId,
+                ReviewID = reviewId,
+                CreationDate = DateTime.Now
+            };
+
+            Db.Comments.Add(comment);
+            Db.SaveChanges();
+
+            return RedirectToAction("Index");
         }
 
         [AllowAnonymous]
@@ -279,10 +264,10 @@ namespace Reviews.Controllers
                 }
                 else if (date != null)
                 {
-                    var formattedDateRecipe = review.CreationDate.ToString("MM/dd/yyyy");
+                    var formattedDateReview = review.CreationDate.ToString("MM/dd/yyyy");
                     var formattedDate = date.Value.ToString("MM/dd/yyyy");
 
-                    if (formattedDateRecipe.Equals(formattedDate))
+                    if (formattedDateReview.Equals(formattedDate))
                     {
                         queryReviews.Add(review);
                     }

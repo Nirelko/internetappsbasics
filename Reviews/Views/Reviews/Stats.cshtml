@@ -6,7 +6,7 @@
 }
 
 @{
-    var recipeComments = Model;
+    var reviewComments = Model;
 }
 
 <table class="table">
@@ -23,17 +23,17 @@
     </tr>
 
     @{
-        foreach (var recipe in recipeComments)
+        foreach (var review in reviewComments)
         {
             <tr>
                 <td>
-                    @recipe.Title
+                    @review.Title
                 </td>
                 <td>
-                    @recipe.NumberOfComment
+                    @review.NumberOfComment
                 </td>
                 <td>
-                    @recipe.AuthorFullName
+                    @review.AuthorFullName
                 </td>
             </tr>
         }
@@ -43,31 +43,20 @@
 
 <style>
     .bar {
-        fill: green;
+        fill: #117bf3;
         transition: fill 3s;
     }
 
-    .bar:hover {
-        fill: brown;
-    }
-
-    .axis {
-        font: 10px sans-serif;
-    }
-
-    .axis path,
-    .axis line {
-        fill: none;
-        stroke: #000;
-        shape-rendering: crispEdges;
-    }
+        .bar:hover {
+            fill: #108AEC;
+        }
 </style>
 
 <hr/>
 
-<section id="popular-recipes-graph">
-    <h4>Most popular recipes</h4>
-    <p>Show the most popular recipes according to the number of comments they got</p>
+<section id="popular-reviews-graph">
+    <h4>Most popular reviews</h4>
+    <p>Show the most popular reviews according to the number of comments they got</p>
 </section>
 
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
@@ -77,7 +66,7 @@
         url: '/Reviews/StatsJson',
         success: function (result) {
             var usersData = result;
-            createPopularRecipesGraph(usersData);
+            createPopularReviewsGraph(usersData);
         },
         error: function(hxr, status, err) {
             console.log('status: ' + status + ', error: ' + err);

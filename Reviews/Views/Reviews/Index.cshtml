@@ -50,7 +50,7 @@
                     if (recommendedReview != null)
                     {
                         <h6>Recommended just for you :)</h6>
-                        <p>Click on the link below to see the most popular recipe in your favorite category</p>
+                        <p>Click on the link below to see the most popular review in your favorite category</p>
                         <a>@Html.ActionLink(recommendedReview.Title, "../Reviews/RecommendedRecipeDetails")</a>
                     }
                 }
@@ -63,7 +63,7 @@
     <div class="col-md-10">
         @if (user != null)
         {
-            <h6>Can't find the right recipe?</h6>
+            <h6>Can't find the right review?</h6>
             <button type="button" class="btn" style="border-radius: 15px 5px;">
                 @Html.ActionLink("Add a new Review", "Create")
             </button>
@@ -73,28 +73,28 @@
     <hr />
 }
 
-@foreach (var recipe in Model)
+@foreach (var review in Model)
 {
     <section>
         <article class="blogPost">
             <div>
                 <h4 style="color: green; display: inline-block;">
-                    @Html.DisplayFor(modelItem => recipe.Title)
+                    @Html.DisplayFor(modelItem => review.Title)
                 </h4>
-                <a href="https://twitter.com/intent/tweet?screen_name=stackReviews&text=Read this review for @recipe.Title http://localhost:53013/Recipes/Details/@recipe.Id" class="twitter-mention-button" data-show-count="false">Tweet to stackReviews</a>
+                <a href="https://twitter.com/intent/tweet?screen_name=stackReviews&text=Read this review for @review.Title http://localhost:53013/Recipes/Details/@review.Id" class="twitter-mention-button" data-show-count="false">Tweet to stackReviews</a>
                 <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
             </div>
-            <p>Posted on @Html.DisplayFor(modelItem => recipe.CreationDate) by @Html.ActionLink(recipe.User.Username, "Details", "User", new { id = recipe.User.Id }, null) - <b>@recipe.Comments.Count Comments</b> in @Html.DisplayFor(modelItem => recipe.Category.Name) category</p>
+            <p>Posted on @Html.DisplayFor(modelItem => review.CreationDate) by @Html.ActionLink(review.User.Username, "Details", "User", new { id = review.User.Id }, null) - <b>@review.Comments.Count Comments</b> in @Html.DisplayFor(modelItem => review.Category.Name) category</p>
 
             <div style="column-count: 3; column-gap:40px; column-rule: 1px solid lightgrey">
-                @Html.DisplayFor(modelItem => recipe.Content)
+                @Html.DisplayFor(modelItem => review.Content)
             </div>                        
                 <div>
-                    @Html.ActionLink("Details", "Details", new { id = recipe.Id })
+                    @Html.ActionLink("Details", "Details", new { id = review.Id })
                     @if (user != null && user.IsAdmin)
                     {
-                        <span> | </span> @Html.ActionLink("Edit", "Edit", new { id = recipe.Id })
-                        <span> | </span> @Html.ActionLink("Delete", "Delete", new { id = recipe.Id })
+                        <span> | </span> @Html.ActionLink("Edit", "Edit", new { id = review.Id })
+                        <span> | </span> @Html.ActionLink("Delete", "Delete", new { id = review.Id })
                     }
                 </div>            
         </article>
@@ -102,7 +102,7 @@
     <br />
     <section id="comments">
         <h5>Comments</h5>
-        @foreach (var comment in recipe.Comments)
+        @foreach (var comment in review.Comments)
         {
             <article>
                 <header>
@@ -117,8 +117,8 @@
             using (Html.BeginForm("PostComment", "Reviews"))
             {
                 <input type="hidden" name="userId" value="@user.Id" />
-                <input type="hidden" name="recipeId" value="@recipe.Id" />
-                <input type="text" name="content" placeholder="Add a new comment..." style="margin: 10px 0" />
+                <input type="hidden" name="reviewId" value="@review.Id" />
+                <textarea type="text" name="content" placeholder="Add a new comment..." style="margin: 10px 0"></textarea>
                 <input type="submit" value="Post" class="btn btn-default" />
                 <br />
             }
