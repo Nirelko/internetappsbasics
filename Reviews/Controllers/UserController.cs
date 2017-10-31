@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -13,7 +14,7 @@ namespace Reviews.Controllers
         [AdminRequired]
         public ActionResult Index()
         {
-            return View(Db.Users.ToList());
+            return View(Db.Users.OrderByDescending(x => x.Username).ToList());
         }
 
         [AdminRequired]
@@ -35,6 +36,12 @@ namespace Reviews.Controllers
 
         [AllowAnonymous]
         public ActionResult Create()
+        {
+            return View();
+        }
+
+        [AdminRequired]
+        public ActionResult Add()
         {
             return View();
         }
@@ -118,6 +125,23 @@ namespace Reviews.Controllers
         [AllowAnonymous]
         public ActionResult Create([Bind(Include = "ID,Gender,Username,FirstName,LastName,Password,isAdmin")] User user)
         {
+            var oRegisterRedirect = SaveUser(user, RedirectToAction("Index", "Home"));
+
+            Session.Add("User", user);
+
+            return oRegisterRedirect;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [AdminRequired]
+        public ActionResult Add([Bind(Include = "ID,Gender,Username,FirstName,LastName,Password,isAdmin")] User user)
+        {
+            return SaveUser(user, RedirectToAction("Index", "User"));
+        }
+
+        private ActionResult SaveUser(User user, RedirectToRouteResult redirectOnSucess)
+        {
             if (!ModelState.IsValid || Db.Users.Any(x => x.Username == user.Username))
             {
                 return View(user);
@@ -126,7 +150,7 @@ namespace Reviews.Controllers
             Db.Users.Add(user);
             Db.SaveChanges();
 
-            return RedirectToAction("Login", "User");
+            return redirectOnSucess;
         }
 
         [HttpPost]
@@ -173,18 +197,12 @@ namespace Reviews.Controllers
         {
             RemoveLinkedReviewsComments(userId);
 
-            foreach (var review in Db.Reviews.Where(x => x.User.Id == userId).ToList())
-            {
-                Db.Reviews.Remove(review);
-            }
+            Db.Reviews.Where(x => x.User.Id == userId).ToList().ForEach(x => Db.Reviews.Remove(x));
         }
 
         private void RemoveLinkedReviewsComments(int userId)
         {
-            foreach (var comment in Db.Comments.Where(x => x.User.Id == userId).ToList())
-            {
-                Db.Comments.Remove(comment);
-            }
+            Db.Comments.Where(x => x.User.Id == userId).ToList().ForEach(x => Db.Comments.Remove(x));
         }
 
         [HttpPost]
@@ -207,6 +225,11 @@ namespace Reviews.Controllers
         [AdminRequired]
         public ActionResult Search(string username, string firstname, string lastname)
         {
+            if (string.IsNullOrEmpty(username) && string.IsNullOrEmpty(firstname) && string.IsNullOrEmpty(lastname))
+            {
+                return View(Db.Users.ToList().OrderByDescending(x => x.Username));
+            }
+
             return View(Db.Users.Where(user =>
                 (!string.IsNullOrEmpty(username) && user.Username.Contains(username)) ||
                 (!string.IsNullOrEmpty(firstname) && user.FirstName.Contains(firstname)) ||

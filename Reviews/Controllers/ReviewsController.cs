@@ -221,7 +221,7 @@ namespace Reviews.Controllers
                 {
                     Title = review.Title,
                     NumberOfComment = review.Comments.Count,
-                    AuthorFullName = $"{user.FirstName} {user.LastName}"
+                    AuthorFullName = user.FirstName + " " + user.LastName
                 };
 
             return View(reviewCommentViewModels.ToList());
@@ -237,7 +237,7 @@ namespace Reviews.Controllers
                 {
                     Title = review.Title,
                     NumberOfComment = review.Comments.Count,
-                    AuthorFullName = $"{user.FirstName} {user.LastName}"
+                    AuthorFullName = user.FirstName + " " + user.LastName
                 };
 
             return Json(reviewCommentViewModels.ToList(), JsonRequestBehavior.AllowGet);

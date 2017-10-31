@@ -1,9 +1,11 @@
-﻿using System.Data.Entity;
+﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using Reviews.Attributes;
 using Reviews.Models;
+using WebGrease.Css.Extensions;
 
 namespace Reviews.Controllers
 {
@@ -23,7 +25,6 @@ namespace Reviews.Controllers
             }
 
             var category = Db.Categories.Find(id);
-
             if (category == null)
             {
                 return HttpNotFound();
@@ -41,14 +42,7 @@ namespace Reviews.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "ID,Name")] Category category)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(category);
-            }
-
-            var requestedCategory = Db.Categories.FirstOrDefault(x => x.Name == category.Name);
-
-            if (requestedCategory != null)
+            if (!ModelState.IsValid || Db.Categories.Any(x => x.Name == category.Name))
             {
                 return View(category);
             }
@@ -67,7 +61,6 @@ namespace Reviews.Controllers
             }
 
             var category = Db.Categories.Find(id);
-
             if (category == null)
             {
                 return HttpNotFound();
@@ -100,7 +93,6 @@ namespace Reviews.Controllers
             }
 
             var category = Db.Categories.Find(id);
-
             if (category == null)
             {
                 return HttpNotFound();
@@ -115,26 +107,35 @@ namespace Reviews.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             var category = Db.Categories.Find(id);
-            var recipes = Db.Reviews.Where(x => x.Category.Id == id).ToList();
-
-            foreach (var currRecipe in recipes)
+            if (category == null)
             {
-                var recipe = Db.Reviews.Find(currRecipe.Id);
-
-                var commentsToRemove = Db.Comments.Where(x => x.Review.Id == currRecipe.Id).ToList();
-                    
-                foreach (var currComment in commentsToRemove)
-                {
-                    Db.Comments.Remove(currComment);
-                }
-
-                Db.Reviews.Remove(recipe);
+                return HttpNotFound();
             }
 
+            RemoveCategoryReviews(id);
+
             Db.Categories.Remove(category);
+
             Db.SaveChanges();
 
             return RedirectToAction("Index");
+        }
+
+        private void RemoveCategoryReviews(int id)
+        {
+            var categoryReviews = Db.Reviews.Where(x => x.Category.Id == id).ToList();
+
+            RemoveCategoryReviewsComments(categoryReviews);
+
+            categoryReviews.ForEach(x => Db.Reviews.Remove(x));
+        }
+
+        private void RemoveCategoryReviewsComments(IEnumerable<Review> categoryReviews)
+        {
+            var categoryReviewsIds = categoryReviews.Select(x => x.Id);
+            Db.Comments
+                .Where(x => categoryReviewsIds.Any(y => y == x.Review.Id))
+                .ForEach(x => Db.Comments.Remove(x));
         }
     }
 }
