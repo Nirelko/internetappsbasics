@@ -19,7 +19,7 @@
     <a href="/">
         <img src="../../Content/stackReviews.png" style="width: 10rem;">
     </a>
-    <div class="navbar-nav-scroll">
+    <nav class="navbar-nav-scroll">
         <ul class="navbar-nav bd-navbar-nav flex-row">
             <li class="nav-item">@Html.ActionLink("Home", "Index", "Home", new {area = ""}, new {@class = "nav-link"})</li>
             <li class="nav-item">@Html.ActionLink("Reviews", "Index", "Reviews", new {area = ""}, new {@class = "nav-link"})</li>
@@ -35,20 +35,23 @@
             <li class="nav-item">@Html.ActionLink("Review Statistics", "Stats", "Reviews", new {area = ""}, new {@class = "nav-link"})</li>
             <li class="nav-item">@Html.ActionLink("Contact", "Contact", "Home", new {area = ""}, new {@class = "nav-link"})</li>
         </ul>
-    </div>
+    </nav>
     @Html.Partial("_LoginPartial")
 
 </header>
-<div class="main-search">
-    <div style="width: 50%;">
-        <div class="input-group">
-            <input type="text" class="form-control" placeholder="Search review for...">
-            <span class="input-group-btn">
-                <button class="btn btn-outline-light btn-lg" type="button">Search!</button>
-            </span>
+@using (Html.BeginForm("Search", "Reviews", FormMethod.Get))
+{
+    <div class="main-search">
+        <div style="width: 50%;">
+            <div class="input-group">
+                <input type="text" class="form-control" name="title" placeholder="Search review for...">
+                <span class="input-group-btn">
+                    <button class="btn btn-outline-light btn-lg" type="button">Search!</button>
+                </span>
+            </div>
         </div>
     </div>
-</div>
+}
 <div class="container" style="margin-bottom: 45px;">
     @RenderBody()
 

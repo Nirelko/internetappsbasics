@@ -14,7 +14,7 @@
                 <input type="password" name="password" class="form-control" placeholder="Password">
             </div>
             <div style="display:flex; justify-content:flex-end">
-                <a class="btn" href="~/Views/User/Create.cshtml">Register</a>
+                @Html.ActionLink("Register", "Create", "User", new { area = "" }, new { @class = "btn" })
                 <button type="submit" class="btn btn-primary" style="margin-right: 5px">Sign in</button>
             </div>
         }
