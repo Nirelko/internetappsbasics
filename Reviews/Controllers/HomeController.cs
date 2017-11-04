@@ -1,4 +1,6 @@
-﻿using System.Web.Mvc;
+﻿using Reviews.Models;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace Reviews.Controllers
 {
@@ -13,7 +15,14 @@ namespace Reviews.Controllers
         [AllowAnonymous]
         public ActionResult Contact()
         {
-            ViewBag.Message = "Your contact page.";
+
+            if (Db.Locations.Count() == 0)
+            {
+                Db.Locations.Add(new Location() { Address = "450 Serra Mall, Stanford, CA 94305, USA" });
+                Db.SaveChanges();
+            }
+
+            ViewBag.Location = Db.Locations.First().Address;
 
             return View();
         }

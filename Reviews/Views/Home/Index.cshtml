@@ -4,7 +4,7 @@
 
 <div class="row">
     <div class="col-md-12" style="padding-right: 40px;">
-        <h2>Welcome To StackReviews!</h2>
+        <h2 class="welcome">Welcome To StackReviews!</h2>
         <br />
         <p>
             Think of the last time you bought something you really cared about. Maybe it was a life insurance policy. Maybe it was a coffee pot. Some people really care about lip balm.
@@ -12,11 +12,24 @@
             <br/>
             <b>StackReviews does all that work for you.</b>
         </p>
-        <div>
+        <div style="text-align:center">
             <p>An example of an excellent review of <b>Asaf's new Seat Ibiza FR 2018</b></p>
             <video width="640" height="360" controls>
                 <source src="~/Content/seat_ibiza_review.mp4" type="video/mp4">
             </video>
+            <br />
+            <canvas id="canvas" width="1200" height="286"></canvas>
+            <script>
+                var canvas = document.getElementById('canvas');
+                var context = canvas.getContext('2d');
+                var imageObj = new Image();
+
+                imageObj.onload = function() {
+                    context.drawImage(imageObj, 0, 0);
+                };
+
+                imageObj.src = '../../../../Content/stackReviews.png';
+            </script>
         </div>
     </div>
 
