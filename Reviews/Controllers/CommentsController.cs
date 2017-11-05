@@ -44,7 +44,7 @@ namespace Reviews.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,UserID,RecipeID,Content,CreationDate")] Comment comment)
+        public ActionResult Create([Bind(Include = "ID,UserID,ReviewID,Content,CreationDate")] Comment comment)
         {
             if (ModelState.IsValid)
             {
@@ -82,7 +82,7 @@ namespace Reviews.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,UserID,RecipeID,Content,CreationDate")] Comment comment)
+        public ActionResult Edit([Bind(Include = "ID,UserID,ReviewID,Content,CreationDate")] Comment comment)
         {
             if (ModelState.IsValid)
             {

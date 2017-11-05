@@ -6,8 +6,9 @@
 }
 
 @{
-    // collections of users
-    var usersInfo = Model.Select(x => new
+
+    // Distinct users
+    var distinctUsers = Model.Select(x => new
     {
         UserName = x.UserName,
         FirstName = x.FirstName,
@@ -15,18 +16,18 @@
         ID = x.Id
     }).Distinct();
 
-    // collection of users and their comments
-    var usersRecipesInfo = usersInfo.Select(user => new
+    // Comments and reviews
+    var usersReviewsInfo = distinctUsers.Select(user => new
     {
         UserID = user.ID,
         UserName = user.UserName,
         FirstName = user.FirstName,
         LastName = user.LastName,
-        Recipes = Model.Where(y => y.Id == user.ID).ToArray()
+        Reviews = Model.Where(x => x.Id == user.ID).ToArray()
     });
 
-    // collection of users and number of recipes (for JSON phi data)
-    var usersReplayCount = usersRecipesInfo.Select(x => new { Name = x.UserName, Count = x.Recipes.Length });
+    // User and its number of reviews
+    var usersReplayCount = usersReviewsInfo.Distinct().Select(x => new { Name = x.UserName, Count = x.Reviews.Length });
 }
 
 <table class="table">
@@ -46,7 +47,7 @@
     </tr>
 
     @{
-        foreach (var user in usersRecipesInfo)
+        foreach (var user in usersReviewsInfo)
         {
             <tr>
                 <td>
@@ -61,11 +62,11 @@
                 <td>
                     <ul>
                         @{
-                            // print recipes for each user
-                            foreach (var recipe in user.Recipes)
+
+                            foreach (var review in user.Reviews)
                             {
                                 <li>
-                                    @Html.ActionLink(recipe.Title, "../Reviews/DetailsByTitle", new { title = recipe.Title })
+                                    @Html.ActionLink(review.Title, "../Reviews/DetailsByTitle", new { title = review.Title })
                                 </li>
                             }
                         }
@@ -80,7 +81,7 @@
 
 <section id="popular-users-graph">
     <h4>Most popular reviewers</h4>
-    <p>Show the most popular users according to the number of recipes they've added so far</p>
+    <p>Displays the users with the most reviews</p>
 </section>
 
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
@@ -94,7 +95,7 @@
 
 <section id="popular-gender-graph">
     <h4>Users by gender</h4>
-    <p>Show the users who added recipes split by their gender</p>
+    <p>Displays the users who wrote reviews by their gender</p>
 </section>
 <script>
         $.ajax({

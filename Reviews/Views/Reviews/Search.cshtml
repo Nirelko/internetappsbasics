@@ -49,12 +49,12 @@
             <div class="form-group col-md-4">
                 @if (user != null)
                 {
-                    Review recommendedReview = ViewBag.recommendedRecipe;
+                    Review recommendedReview = ViewBag.recommendedReview;
 
                     if (recommendedReview != null)
                     {
                         <h6>Recommended just for you :)</h6>
-                        <p>Click on the link below to see the most popular recipe in your favorite category</p>
+                        <p>Click here to see the most popular review in your favorite category</p>
                         <a>@Html.ActionLink(recommendedReview.Title, "./RecommendedReviewDetails")</a>
                     }
                 }
@@ -67,7 +67,7 @@
     <div class="col-md-10">
         @if (user != null)
         {
-            <h6>There is no a review? How about you will review it =)</h6>
+            <h6>There is no a review? Go ahead and add one!</h6>
             <button type="button" class="btn" style="border-radius: 15px 5px">
                 @Html.ActionLink("Add a new Review", "Create")
             </button>

@@ -45,13 +45,13 @@
             <div class="form-group col-md-4">
                 @if (user != null)
                 {
-                    Review recommendedReview = ViewBag.recommendedRecipe;
+                    Review recommendedReview = ViewBag.recommendedReview;
 
                     if (recommendedReview != null)
                     {
                         <h6>Recommended just for you :)</h6>
                         <p>Click on the link below to see the most popular review in your favorite category</p>
-                        <a>@Html.ActionLink(recommendedReview.Title, "../Reviews/RecommendedRecipeDetails")</a>
+                        <a>@Html.ActionLink(recommendedReview.Title, "../Reviews/recommendedReviewDetails")</a>
                     }
                 }
             </div>
@@ -63,7 +63,7 @@
     <div class="col-md-10">
         @if (user != null)
         {
-            <h6>Can't find the right review?</h6>
+            <h6>Please add a review!</h6>
             <button type="button" class="btn" style="border-radius: 15px 5px;">
                 @Html.ActionLink("Add a new Review", "Create")
             </button>
@@ -81,7 +81,7 @@
                 <h4 style="color: green; display: inline-block;">
                     @Html.DisplayFor(modelItem => review.Title)
                 </h4>
-                <a href="https://twitter.com/intent/tweet?screen_name=stackReviews&text=Read this review for @review.Title http://localhost:53013/Recipes/Details/@review.Id" class="twitter-mention-button" data-show-count="false">Tweet to stackReviews</a>
+                <a href="https://twitter.com/intent/tweet?screen_name=stackReviews&text=Read this review for @review.Title http://localhost:53013/Reviews/Details/@review.Id" class="twitter-mention-button" data-show-count="false">Tweet to stackReviews</a>
                 <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
             </div>
             <p>Posted on @Html.DisplayFor(modelItem => review.CreationDate) by @Html.ActionLink(review.User.Username, "Details", "User", new { id = review.User.Id }, null) - <b>@review.Comments.Count Comments</b> in @Html.DisplayFor(modelItem => review.Category.Name) category</p>
