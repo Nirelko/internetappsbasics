@@ -50,8 +50,8 @@
                     if (recommendedReview != null)
                     {
                         <h6>Recommended just for you :)</h6>
-                        <p>Click on the link below to see the most popular review in your favorite category</p>
-                        <a>@Html.ActionLink(recommendedReview.Title, "../Reviews/recommendedReviewDetails")</a>
+                        <p>Click on the link below to see the most popular review in your favorite category - <b>@Html.DisplayFor(modelItem => recommendedReview.Category.Name)</b></p>
+                        <a>@Html.ActionLink(recommendedReview.Title, "../Reviews/RecommendedReviewDetails")</a>
                     }
                 }
             </div>

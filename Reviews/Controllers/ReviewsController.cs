@@ -3,6 +3,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using Reviews.Extensions;
 using Reviews.Models;
 using Reviews.ViewModels;
 
@@ -51,7 +52,7 @@ namespace Reviews.Controllers
             return reviews
                 .Where(x => x.Category.Id == userMostReviewedCategory.Id)
                 .OrderByDescending(x => x.Comments.Count)
-                .FirstOrDefault();
+                .Pick();
         }
 
         [AllowAnonymous]
@@ -72,7 +73,7 @@ namespace Reviews.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult RecommendedReview()
+        public ActionResult RecommendedReviewDetails()
         {
             var recommendedReview = GetRecommendedReview(LoadedQueryableReviewses);
             if (recommendedReview == null)

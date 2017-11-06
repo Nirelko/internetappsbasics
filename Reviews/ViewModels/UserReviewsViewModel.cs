@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
+using Reviews.Models;
 
 namespace Reviews.ViewModels
 {
@@ -13,7 +15,7 @@ namespace Reviews.ViewModels
         [DisplayName("Last Name")]
         public string LastName { get; set; }
 
-        [DisplayName("Review")]
-        public string Title { get; set; }
+        [DisplayName("Reviews")]
+        public IEnumerable<Review> Reviews { get; set; }
     }
 }

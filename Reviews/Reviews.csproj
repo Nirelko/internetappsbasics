@@ -199,6 +199,7 @@
     <Compile Include="Attributes\AdminRequiredAttribute.cs" />
     <Compile Include="Attributes\AnonymousControllerRequired.cs" />
     <Compile Include="Attributes\LoginRequiredAttribute.cs" />
+    <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="Filters\ReviewsAuthorizeFilter.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\UserController.cs" />
@@ -293,7 +294,6 @@
     <Content Include="Views\Reviews\Stats.cshtml" />
     <Content Include="Views\Reviews\Search.cshtml" />
     <Content Include="Views\User\Search.cshtml" />
-    <Content Include="Views\Reviews\DetailsByTitle.cshtml" />
     <Content Include="Views\User\Add.cshtml" />
   </ItemGroup>
   <ItemGroup>

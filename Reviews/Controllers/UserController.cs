@@ -103,19 +103,25 @@ namespace Reviews.Controllers
         [AllowAnonymous]
         public ActionResult Stats()
         {
-            var userReviewsViewModels =
-                from user in Db.Users
-                join review in Db.Reviews on user.Id equals review.User.Id
-                select new UserReviewsViewModel
+            var userReviewsViewModels = (from user in Db.Users
+                    join review in Db.Reviews on user.Id equals review.User.Id
+                    select new
+                    {
+                        Id = user.Id,
+                        UserName = user.Username,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        Review = review
+                    }).GroupBy(x => x.Id).ToList()
+                .Select(x => new UserReviewsViewModel
                 {
-                    UserName = user.Username,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Title = review.Title,
-                    Id = user.Id
-                };
+                    UserName = x.First().UserName,
+                    FirstName = x.First().FirstName,
+                    LastName = x.First().LastName,
+                    Reviews = x.Select(y => y.Review)
+                });
 
-            return View(userReviewsViewModels.ToList());
+            return View(userReviewsViewModels);
         }       
 
         #region API
