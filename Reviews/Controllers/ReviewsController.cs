@@ -3,7 +3,6 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
-using Reviews.Extensions;
 using Reviews.Models;
 using Reviews.ViewModels;
 
@@ -26,7 +25,7 @@ namespace Reviews.Controllers
         }
 
         /// <summary>
-        /// Returns the most commented review in the most reviewed category by the user
+        /// Returns the most commented and recent review in the most reviewed category by the current user
         /// </summary>
         /// <param name="reviews"></param>
         /// <returns></returns>
@@ -52,7 +51,7 @@ namespace Reviews.Controllers
             return reviews
                 .Where(x => x.Category.Id == userMostReviewedCategory.Id)
                 .OrderByDescending(x => x.Comments.Count)
-                .Pick();
+                .ThenByDescending(x => x.CreationDate).FirstOrDefault();
         }
 
         [AllowAnonymous]

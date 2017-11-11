@@ -16,9 +16,9 @@ namespace Reviews.Controllers
         public ActionResult Contact()
         {
 
-            if (Db.Locations.Count() == 0)
+            if (!Db.Locations.Any())
             {
-                Db.Locations.Add(new Location() { Address = "450 Serra Mall, Stanford, CA 94305, USA" });
+                Db.Locations.Add(new Location { Address = "450 Serra Mall, Stanford, CA 94305, USA" });
                 Db.SaveChanges();
             }
 
